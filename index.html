@@ -198,6 +198,56 @@ tr:hover td{background:rgba(255,255,255,.02)}
 /* Pulse */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .pulse{animation:pulse 2s ease infinite}
+
+/* Heatmap grid */
+.heatmap-grid{display:grid;grid-template-columns:repeat(24,1fr);gap:2px}
+.heatmap-cell{aspect-ratio:1;border-radius:3px;transition:transform .15s;cursor:pointer;position:relative}
+.heatmap-cell:hover{transform:scale(1.3);z-index:1}
+.heatmap-row-label{font-size:11px;color:var(--text3);display:flex;align-items:center;min-width:60px}
+.heatmap-wrap{display:flex;gap:8px}
+.heatmap-content{flex:1}
+.heatmap-hour-labels{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin-bottom:4px}
+.heatmap-hour-labels span{font-size:9px;color:var(--text3);text-align:center}
+
+/* Storyboard */
+.story-frame{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.story-frame-img{height:140px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:36px;border-bottom:1px solid var(--border)}
+.story-frame-body{padding:12px}
+.story-frame-num{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:4px}
+.story-frame-desc{font-size:12px;color:var(--text2);line-height:1.4}
+
+/* Calculator */
+.calc-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:border-color .15s}
+.calc-input:focus{border-color:var(--accent)}
+.calc-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block}
+.calc-result{background:linear-gradient(135deg,rgba(137,64,250,.1),rgba(137,64,250,.05));border:1px solid rgba(137,64,250,.2);border-radius:12px;padding:20px;text-align:center}
+.calc-result-value{font-size:36px;font-weight:700;color:var(--accent)}
+.calc-select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;font-family:inherit;outline:none;appearance:none;cursor:pointer}
+
+/* Timeline */
+.timeline-bar{height:28px;border-radius:6px;position:relative;overflow:hidden;cursor:pointer}
+.timeline-segment{position:absolute;top:0;height:100%;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:500;color:#fff;white-space:nowrap;overflow:hidden}
+
+/* Task assignment */
+.team-member{display:flex;align-items:center;gap:10px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:10px}
+.team-avatar{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.team-info{flex:1;min-width:0}
+.team-name{font-size:13px;font-weight:500}
+.team-role{font-size:11px;color:var(--text3)}
+.team-load{width:60px}
+.load-bar{height:4px;border-radius:2px;background:var(--border)}
+.load-fill{height:100%;border-radius:2px}
+
+/* QC score */
+.qc-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;position:relative}
+.qc-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--card)}
+.qc-ring span{position:relative;z-index:1}
+
+/* Bot log */
+.bot-log{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.bot-log-time{color:var(--text3);font-size:11px;min-width:50px;flex-shrink:0}
+.bot-log-type{min-width:70px;flex-shrink:0}
+.bot-log-msg{color:var(--text2);flex:1}
 </style>
 </head>
 <body>
@@ -228,19 +278,70 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="nav-item" data-page="competitors" onclick="navigate('competitors',this)">
       <span class="icon">🎯</span> Конкуренты
     </div>
+    <div class="nav-item" data-page="roi" onclick="navigate('roi',this)">
+      <span class="icon">💰</span> ROI аналитика
+    </div>
+    <div class="nav-item" data-page="heatmap" onclick="navigate('heatmap',this)">
+      <span class="icon">🗓</span> Heatmap
+    </div>
+    <div class="nav-item" data-page="forecast" onclick="navigate('forecast',this)">
+      <span class="icon">🔮</span> AI-прогноз
+    </div>
 
     <div class="nav-section">Контент</div>
     <div class="nav-item" data-page="prompts" onclick="navigate('prompts',this)">
       <span class="icon">✨</span> Промт-генератор
     </div>
+    <div class="nav-item" data-page="versions" onclick="navigate('versions',this)">
+      <span class="icon">🔄</span> Версионность
+    </div>
     <div class="nav-item" data-page="library" onclick="navigate('library',this)">
       <span class="icon">📚</span> Библиотека
       <span class="badge">48</span>
     </div>
+    <div class="nav-item" data-page="moodboard" onclick="navigate('moodboard',this)">
+      <span class="icon">🎨</span> Mood Board
+    </div>
+    <div class="nav-item" data-page="storyboard" onclick="navigate('storyboard',this)">
+      <span class="icon">🎞</span> Раскадровка
+    </div>
+    <div class="nav-item" data-page="autobrief" onclick="navigate('autobrief',this)">
+      <span class="icon">📝</span> Автобриф
+    </div>
+
+    <div class="nav-section">Клиенты</div>
+    <div class="nav-item" data-page="portal" onclick="navigate('portal',this)">
+      <span class="icon">👤</span> Портал клиента
+    </div>
+    <div class="nav-item" data-page="proposal" onclick="navigate('proposal',this)">
+      <span class="icon">📄</span> Генератор КП
+    </div>
+    <div class="nav-item" data-page="calculator" onclick="navigate('calculator',this)">
+      <span class="icon">🧮</span> Калькулятор
+    </div>
+
+    <div class="nav-section">Команда</div>
+    <div class="nav-item" data-page="tasks" onclick="navigate('tasks',this)">
+      <span class="icon">👥</span> Задачи
+    </div>
+    <div class="nav-item" data-page="timetrack" onclick="navigate('timetrack',this)">
+      <span class="icon">⏱</span> Таймтрекинг
+    </div>
+
+    <div class="nav-section">Автоматизация</div>
+    <div class="nav-item" data-page="autopost" onclick="navigate('autopost',this)">
+      <span class="icon">📤</span> Auto-posting
+    </div>
+    <div class="nav-item" data-page="qc" onclick="navigate('qc',this)">
+      <span class="icon">✅</span> Quality Check
+    </div>
+    <div class="nav-item" data-page="tgbot" onclick="navigate('tgbot',this)">
+      <span class="icon">🤖</span> Telegram-бот
+    </div>
 
     <div class="nav-section">Инструменты</div>
     <div class="nav-item" data-page="assistant" onclick="navigate('assistant',this)">
-      <span class="icon">🤖</span> AI-ассистент
+      <span class="icon">💬</span> AI-ассистент
     </div>
     <div class="nav-item" data-page="crm" onclick="navigate('crm',this)">
       <span class="icon">📋</span> CRM проектов
@@ -1124,6 +1225,737 @@ tr:hover td{background:rgba(255,255,255,.02)}
     </div>
   </div>
 
+  <!-- ===== ROI ANALYTICS ===== -->
+  <div class="page" id="page-roi">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">ROI аналитика контента</div>
+        <div class="section-sub">Какие стили и форматы приносят больше денег</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="topbar-btn">Месяц</button>
+        <button class="topbar-btn primary">Квартал</button>
+        <button class="topbar-btn">Год</button>
+      </div>
+    </div>
+    <div class="grid grid-4 mb-24">
+      <div class="card">
+        <div class="card-title">💰 Общая выручка</div>
+        <div class="card-value" style="color:var(--green)">₽ 4.2M</div>
+        <div class="card-sub" style="color:var(--green)">+18% vs прошлый квартал</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Средний чек</div>
+        <div class="card-value">₽ 380K</div>
+        <div class="card-sub" style="color:var(--green)">+12%</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔄 Конверсия из лида</div>
+        <div class="card-value">34%</div>
+        <div class="card-sub">из 47 обращений</div>
+      </div>
+      <div class="card">
+        <div class="card-title">⭐ Повторные клиенты</div>
+        <div class="card-value" style="color:var(--accent)">62%</div>
+        <div class="card-sub">возвращаемость</div>
+      </div>
+    </div>
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-8">📈 Доход по типу контента</div>
+        <table>
+          <thead><tr><th>Тип</th><th>Проектов</th><th>Выручка</th><th>Ср. чек</th><th>ROI</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text);font-weight:500">Product Video</td><td>5</td><td style="color:var(--green)">₽ 1.8M</td><td>₽ 360K</td><td><span class="tag green">+240%</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">AI-ролики</td><td>4</td><td style="color:var(--green)">₽ 1.2M</td><td>₽ 300K</td><td><span class="tag green">+310%</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Explainer Video</td><td>3</td><td>₽ 680K</td><td>₽ 227K</td><td><span class="tag yellow">+120%</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Reels / Shorts</td><td>6</td><td>₽ 520K</td><td>₽ 87K</td><td><span class="tag yellow">+95%</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">🎯 AI-рекомендации по ROI</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="padding:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:13px">
+            <strong style="color:var(--green)">Масштабировать:</strong> AI-ролики показывают ROI +310% при минимальных затратах на продакшн. Рекомендую увеличить долю AI-проектов до 40%.
+          </div>
+          <div style="padding:10px;background:rgba(137,64,250,.05);border:1px solid rgba(137,64,250,.15);border-radius:8px;font-size:13px">
+            <strong style="color:var(--accent)">Поднять чек:</strong> Product Video — самый доходный сегмент. Средний чек конкурентов ₽ 480K (+33% к нашему).
+          </div>
+          <div style="padding:10px;background:rgba(234,179,8,.05);border:1px solid rgba(234,179,8,.15);border-radius:8px;font-size:13px">
+            <strong style="color:var(--yellow)">Оптимизировать:</strong> Reels/Shorts — низкий ROI. Автоматизировать через AI-генерацию для увеличения маржи.
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title mb-8">📊 Источники клиентов</div>
+      <table>
+        <thead><tr><th>Канал</th><th>Лиды</th><th>Конверсия</th><th>Выручка</th><th>CAC</th><th>Эффективность</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--text);font-weight:500">Behance портфолио</td><td>18</td><td style="color:var(--green)">42%</td><td>₽ 1.6M</td><td>₽ 0</td><td><span class="tag green">Отлично</span></td></tr>
+          <tr><td style="color:var(--text);font-weight:500">Рекомендации</td><td>12</td><td style="color:var(--green)">58%</td><td>₽ 1.4M</td><td>₽ 0</td><td><span class="tag green">Отлично</span></td></tr>
+          <tr><td style="color:var(--text);font-weight:500">Instagram</td><td>9</td><td>22%</td><td>₽ 640K</td><td>₽ 12K</td><td><span class="tag yellow">Норма</span></td></tr>
+          <tr><td style="color:var(--text);font-weight:500">Telegram</td><td>5</td><td>20%</td><td>₽ 380K</td><td>₽ 8K</td><td><span class="tag yellow">Норма</span></td></tr>
+          <tr><td style="color:var(--text);font-weight:500">Холодные заявки</td><td>3</td><td>10%</td><td>₽ 180K</td><td>₽ 25K</td><td><span class="tag red">Низкая</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== HEATMAP ===== -->
+  <div class="page" id="page-heatmap">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Heatmap активности</div>
+        <div class="section-sub">Оптимальное время публикации по платформам</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="topbar-btn active" style="border-color:var(--accent);color:var(--accent)">YouTube</button>
+        <button class="topbar-btn">Instagram</button>
+        <button class="topbar-btn">TikTok</button>
+        <button class="topbar-btn">Behance</button>
+      </div>
+    </div>
+    <div class="card mb-24">
+      <div class="card-title mb-16">📊 Engagement по часам и дням (YouTube)</div>
+      <div class="heatmap-hour-labels" style="margin-left:68px">
+        <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span>
+      </div>
+      <div id="heatmap-container" style="display:flex;flex-direction:column;gap:2px"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px;justify-content:center">
+        <span style="font-size:11px;color:var(--text3)">Низкий</span>
+        <div style="display:flex;gap:2px">
+          <div style="width:16px;height:12px;border-radius:2px;background:rgba(137,64,250,.1)"></div>
+          <div style="width:16px;height:12px;border-radius:2px;background:rgba(137,64,250,.3)"></div>
+          <div style="width:16px;height:12px;border-radius:2px;background:rgba(137,64,250,.5)"></div>
+          <div style="width:16px;height:12px;border-radius:2px;background:rgba(137,64,250,.7)"></div>
+          <div style="width:16px;height:12px;border-radius:2px;background:rgba(137,64,250,.9)"></div>
+        </div>
+        <span style="font-size:11px;color:var(--text3)">Высокий</span>
+      </div>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-title">🏆 Лучшее время</div>
+        <div class="card-value" style="color:var(--green);font-size:22px">Вт, Ср 18:00-21:00</div>
+        <div class="card-sub">Максимальный engagement rate</div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚠ Худшее время</div>
+        <div class="card-value" style="color:var(--red);font-size:22px">Пн 02:00-06:00</div>
+        <div class="card-sub">Минимальная активность</div>
+      </div>
+      <div class="card">
+        <div class="card-title">💡 AI-рекомендация</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:8px">Публикуйте Product Videos во <strong style="color:var(--text)">вторник в 19:00</strong>. Для Reels — <strong style="color:var(--text)">четверг 20:00</strong>. Behance — <strong style="color:var(--text)">среда 10:00</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AI FORECAST ===== -->
+  <div class="page" id="page-forecast">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">AI-прогнозирование трендов</div>
+        <div class="section-sub">Предсказание на 2-4 недели вперёд на основе ML-модели</div>
+      </div>
+      <button class="topbar-btn primary">🔄 Обновить прогноз</button>
+    </div>
+    <div class="grid grid-3 mb-24">
+      <div class="card">
+        <div class="card-title">🎯 Точность прогноза</div>
+        <div class="card-value" style="color:var(--green)">87%</div>
+        <div class="card-sub">за последние 30 дней</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📈 Прогнозов активно</div>
+        <div class="card-value">14</div>
+        <div class="card-sub">на ближайшие 4 недели</div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚡ Сигналов</div>
+        <div class="card-value" style="color:var(--yellow)">5</div>
+        <div class="card-sub">ранних индикаторов</div>
+      </div>
+    </div>
+    <div class="card mb-24">
+      <div class="card-title mb-8">🔮 Прогнозируемые тренды (2-4 недели)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Тренд</th><th>Прогноз роста</th><th>Уверенность</th><th>Пик</th><th>Рекомендация</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text);font-weight:500">AI-генерация 3D персонажей</td><td style="color:var(--green);font-weight:600">+480%</td><td><span class="tag green">92%</span></td><td>~2 недели</td><td><span class="tag green">Готовить контент сейчас</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Interactive Video (branching)</td><td style="color:var(--green);font-weight:600">+350%</td><td><span class="tag green">88%</span></td><td>~3 недели</td><td><span class="tag green">Начать подготовку</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Ambient/ASMR B-roll</td><td style="color:var(--green);font-weight:600">+220%</td><td><span class="tag yellow">74%</span></td><td>~2 недели</td><td><span class="tag yellow">Наблюдать</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Mixed Reality Promo</td><td style="color:var(--green);font-weight:600">+190%</td><td><span class="tag yellow">71%</span></td><td>~4 недели</td><td><span class="tag yellow">Наблюдать</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">AI Voice-over + Lip Sync</td><td style="color:var(--green);font-weight:600">+160%</td><td><span class="tag yellow">68%</span></td><td>~3 недели</td><td><span class="tag">Мониторить</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <div class="card-title mb-8">📉 Угасающие тренды</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px;background:rgba(239,68,68,.05);border-radius:6px;border:1px solid rgba(239,68,68,.15)"><span style="color:var(--text)">Flat 2D Explainers</span><span style="color:var(--red)">-45% за месяц</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px;background:rgba(239,68,68,.05);border-radius:6px;border:1px solid rgba(239,68,68,.15)"><span style="color:var(--text)">Stock Footage Montage</span><span style="color:var(--red)">-38% за месяц</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px;background:rgba(234,179,8,.05);border-radius:6px;border:1px solid rgba(234,179,8,.15)"><span style="color:var(--text)">Whiteboard Animation</span><span style="color:var(--yellow)">-22% за месяц</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">💡 Стратегические рекомендации</div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+          <div style="padding:10px;background:rgba(137,64,250,.05);border:1px solid rgba(137,64,250,.15);border-radius:8px">
+            <strong style="color:var(--accent)">1.</strong> Инвестируйте в AI 3D-персонажей — тренд ещё не пиковый, есть окно возможностей 2 недели.
+          </div>
+          <div style="padding:10px;background:rgba(137,64,250,.05);border:1px solid rgba(137,64,250,.15);border-radius:8px">
+            <strong style="color:var(--accent)">2.</strong> Interactive Video может стать killer-feature для премиальных клиентов. Начните прототип.
+          </div>
+          <div style="padding:10px;background:rgba(137,64,250,.05);border:1px solid rgba(137,64,250,.15);border-radius:8px">
+            <strong style="color:var(--accent)">3.</strong> Переводите Flat 2D проекты на AI-анимацию — клиенты уже ожидают обновлённый стиль.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PROMPT VERSIONING ===== -->
+  <div class="page" id="page-versions">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Версионность промтов</div>
+        <div class="section-sub">История изменений и A/B сравнение результатов</div>
+      </div>
+    </div>
+    <div class="card mb-24">
+      <div class="card-title mb-8">🔄 Промт: Cinematic City Aerial</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Версия</th><th>Изменения</th><th>Платформа</th><th>Оценка AI</th><th>Результат</th><th>Дата</th></tr></thead>
+          <tbody>
+            <tr style="background:rgba(137,64,250,.03)">
+              <td style="color:var(--accent);font-weight:600">v3 (текущая)</td>
+              <td style="font-size:12px">+ anamorphic lens, film grain</td>
+              <td><span class="tag purple">Sora</span></td>
+              <td><span class="tag green">9.2/10</span></td>
+              <td style="color:var(--green)">Отлично</td>
+              <td style="font-size:12px">сегодня</td>
+            </tr>
+            <tr>
+              <td style="color:var(--text2)">v2</td>
+              <td style="font-size:12px">+ volumetric fog, 8K</td>
+              <td><span class="tag purple">Sora</span></td>
+              <td><span class="tag yellow">7.8/10</span></td>
+              <td>Хорошо</td>
+              <td style="font-size:12px">вчера</td>
+            </tr>
+            <tr>
+              <td style="color:var(--text2)">v1</td>
+              <td style="font-size:12px">Базовая версия</td>
+              <td><span class="tag purple">Sora</span></td>
+              <td><span class="tag">6.1/10</span></td>
+              <td>Средне</td>
+              <td style="font-size:12px">2 дня назад</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-8" style="color:var(--yellow)">A — Версия 2</div>
+        <div class="prompt-text" style="font-size:12px;background:rgba(234,179,8,.05);border-color:rgba(234,179,8,.15)">Aerial shot of futuristic city at golden hour, camera dollying forward through glass skyscrapers, volumetric fog, ultra-realistic 8K</div>
+        <div style="margin-top:8px;display:flex;gap:6px"><span class="tag yellow">7.8/10</span><span class="tag">Хорошо</span></div>
+      </div>
+      <div class="card" style="border-color:rgba(137,64,250,.3)">
+        <div class="card-title mb-8" style="color:var(--green)">B — Версия 3 (победитель)</div>
+        <div class="prompt-text" style="font-size:12px">A sweeping cinematic aerial shot of futuristic city at golden hour, camera slowly dollying forward through glass skyscrapers reflecting sunset, volumetric fog, ultra-realistic 8K, anamorphic lens flare, film grain</div>
+        <div style="margin-top:8px;display:flex;gap:6px"><span class="tag green">9.2/10</span><span class="tag green">+18% качество</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title mb-8">📊 Статистика улучшений</div>
+      <div class="grid grid-4" style="gap:12px">
+        <div style="text-align:center;padding:12px;background:var(--surface);border-radius:8px"><div style="font-size:20px;font-weight:700;color:var(--green)">+42%</div><div style="font-size:11px;color:var(--text3)">Общее улучшение</div></div>
+        <div style="text-align:center;padding:12px;background:var(--surface);border-radius:8px"><div style="font-size:20px;font-weight:700;color:var(--accent)">156</div><div style="font-size:11px;color:var(--text3)">Версий создано</div></div>
+        <div style="text-align:center;padding:12px;background:var(--surface);border-radius:8px"><div style="font-size:20px;font-weight:700">48</div><div style="font-size:11px;color:var(--text3)">A/B тестов</div></div>
+        <div style="text-align:center;padding:12px;background:var(--surface);border-radius:8px"><div style="font-size:20px;font-weight:700;color:var(--green)">87%</div><div style="font-size:11px;color:var(--text3)">Win-rate B варианта</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MOOD BOARD ===== -->
+  <div class="page" id="page-moodboard">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Mood Board генератор</div>
+        <div class="section-sub">AI собирает визуальные референсы по запросу или тренду</div>
+      </div>
+      <button class="topbar-btn primary">+ Создать доску</button>
+    </div>
+    <div class="card mb-24">
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="calc-input" style="flex:1" placeholder="Опишите стиль или тему: например, «минималистичная 3D анимация продукта на тёмном фоне»">
+        <button class="topbar-btn primary" style="white-space:nowrap">🎨 Собрать референсы</button>
+      </div>
+    </div>
+    <div class="section-header mb-16">
+      <div class="section-title" style="font-size:15px">Доска: «Cinematic Product Showcase»</div>
+      <div style="display:flex;gap:6px"><span class="tag purple">12 референсов</span><span class="tag">Behance</span><span class="tag">Dribbble</span><span class="tag">Pinterest</span></div>
+    </div>
+    <div class="grid grid-4 mb-24">
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#1a0533,#0a0a2e);display:flex;align-items:center;justify-content:center;font-size:48px">🎥</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Dark Studio Product</div><div style="font-size:11px;color:var(--text3)">Behance — 4.8K likes</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#0a1628,#1e2a40);display:flex;align-items:center;justify-content:center;font-size:48px">💡</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Rim Light Hero</div><div style="font-size:11px;color:var(--text3)">Dribbble — 2.1K likes</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#1a1a0a,#2a2a1a);display:flex;align-items:center;justify-content:center;font-size:48px">✨</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Floating Object 3D</div><div style="font-size:11px;color:var(--text3)">Pinterest — 890 saves</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#0a0a1a,#1a1a3a);display:flex;align-items:center;justify-content:center;font-size:48px">🌟</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Bokeh + Product</div><div style="font-size:11px;color:var(--text3)">Behance — 3.2K likes</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#1a0a1a,#2e1a3e);display:flex;align-items:center;justify-content:center;font-size:48px">🔮</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Glass Morph</div><div style="font-size:11px;color:var(--text3)">Dribbble — 1.7K likes</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#0a1a1a,#1a3a3a);display:flex;align-items:center;justify-content:center;font-size:48px">💎</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Chrome Reflections</div><div style="font-size:11px;color:var(--text3)">Pinterest — 1.2K saves</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#1a1a1a,#333);display:flex;align-items:center;justify-content:center;font-size:48px">🎭</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Dramatic Shadows</div><div style="font-size:11px;color:var(--text3)">Behance — 2.9K likes</div></div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;cursor:pointer">
+        <div style="height:160px;background:linear-gradient(135deg,#0a0a0a,#222);display:flex;align-items:center;justify-content:center;font-size:48px">🖤</div>
+        <div style="padding:10px"><div style="font-size:12px;font-weight:500">Total Black Scene</div><div style="font-size:11px;color:var(--text3)">Dribbble — 3.4K likes</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title mb-8">🤖 AI-анализ доски</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">
+        <strong style="color:var(--text)">Общий стиль:</strong> Тёмные фоны, минималистичная подсветка (rim light, single key), фокус на текстурах (стекло, металл, хром). <br>
+        <strong style="color:var(--text)">Цветовая палитра:</strong> Доминируют глубокий чёрный, холодный синий, фиолетовые акценты. <br>
+        <strong style="color:var(--text)">Промт-рекомендация:</strong> <span style="color:var(--accent)">«dark studio, single rim light, floating product, chrome reflections, shallow DOF, 8K cinematic»</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== STORYBOARD ===== -->
+  <div class="page" id="page-storyboard">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">AI Раскадровка</div>
+        <div class="section-sub">Генерация storyboard из текстового брифа</div>
+      </div>
+    </div>
+    <div class="card mb-24">
+      <div class="card-title mb-8">📝 Бриф</div>
+      <textarea class="calc-input" style="min-height:80px;resize:vertical" placeholder="Опишите ролик: «30-секундный промо для премиального наушника, стиль Apple, тёмный фон, подчёркиваем дизайн и звук»"></textarea>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="topbar-btn primary" onclick="this.textContent='⏳ Генерация...';setTimeout(()=>this.textContent='🎞 Сгенерировать раскадровку',2000)">🎞 Сгенерировать раскадровку</button>
+        <button class="topbar-btn">📋 Загрузить бриф</button>
+      </div>
+    </div>
+    <div class="section-title mb-16" style="font-size:15px">Раскадровка: «SoundMax Premium Headphones» — 8 кадров</div>
+    <div class="grid grid-4 mb-24">
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#000,#111)">🖤</div><div class="story-frame-body"><div class="story-frame-num">Кадр 1 · 0:00-0:04</div><div class="story-frame-desc">Чёрный экран. Звук тихого дыхания. Медленно проявляется силуэт наушников в контровом свете.</div></div></div>
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#0a0a1a,#1a1a3a)">💡</div><div class="story-frame-body"><div class="story-frame-num">Кадр 2 · 0:04-0:08</div><div class="story-frame-desc">Камера медленно орбитирует. Одиночный rim light выхватывает текстуру металла и кожи.</div></div></div>
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#1a0a2e,#2d1b4e)">🔍</div><div class="story-frame-body"><div class="story-frame-num">Кадр 3 · 0:08-0:12</div><div class="story-frame-desc">Макро-план: текстура амбушюр, мягкий фокус на шве. Тактильная близость.</div></div></div>
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#0a1a0a,#1a3a1a)">🎵</div><div class="story-frame-body"><div class="story-frame-num">Кадр 4 · 0:12-0:16</div><div class="story-frame-desc">Звуковая волна визуализируется вокруг наушников. Частицы света пульсируют в ритм.</div></div></div>
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#1a1a0a,#3a3a1a)">⚡</div><div class="story-frame-body"><div class="story-frame-num">Кадр 5 · 0:16-0:20</div><div class="story-frame-desc">Наушники «разбираются» на компоненты. Каждый элемент парит в пространстве.</div></div></div>
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#0a0a1a,#1a1a4a)">👤</div><div class="story-frame-body"><div class="story-frame-num">Кадр 6 · 0:20-0:24</div><div class="story-frame-desc">Силуэт человека надевает наушники. Мир вокруг растворяется — только музыка.</div></div></div>
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#1a0a1a,#4a1a4a)">✨</div><div class="story-frame-body"><div class="story-frame-num">Кадр 7 · 0:24-0:28</div><div class="story-frame-desc">Наушники на подставке. Мягкий свет. Появляется название модели шрифтом SF Pro.</div></div></div>
+      <div class="story-frame"><div class="story-frame-img" style="background:linear-gradient(135deg,#0a0a0a,#1a1a1a)">🏷</div><div class="story-frame-body"><div class="story-frame-num">Кадр 8 · 0:28-0:30</div><div class="story-frame-desc">Логотип SoundMax. Слоган: «Hear Everything». Fade to black.</div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-title mb-8">🤖 AI-рекомендации к раскадровке</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.6">
+        Музыка: Ambient + лёгкий бит (120 BPM). Переходы: dissolve между кадрами 1-4, cut на кадре 5 (разборка). Цветокоррекция: холодные тени, тёплый ключевой свет. Для кадров 1-3 рекомендую Sora, для 5 (разборка) — Runway Gen-3.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AUTO BRIEF ===== -->
+  <div class="page" id="page-autobrief">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Автогенерация брифа</div>
+        <div class="section-sub">AI создаёт бриф из переписки с клиентом</div>
+      </div>
+    </div>
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-8">💬 Входные данные (переписка)</div>
+        <div style="background:var(--surface);border-radius:8px;padding:12px;font-size:12px;color:var(--text2);line-height:1.6;max-height:300px;overflow-y:auto;border:1px solid var(--border)">
+          <div style="margin-bottom:8px"><strong style="color:var(--blue)">Клиент:</strong> Привет! Нам нужен ролик для нового продукта — умная колонка. Хотим что-то в стиле Apple, минималистично.</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--accent)">Студия:</strong> Привет! Примерно на сколько секунд видео?</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--blue)">Клиент:</strong> 30-45 секунд. Нужно для YouTube и Instagram. Бюджет примерно 400-500к.</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--accent)">Студия:</strong> Понял. Какой дедлайн?</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--blue)">Клиент:</strong> Через 3 недели. Колонка будет в двух цветах — чёрный и белый. Хотим показать как она работает с голосовым помощником.</div>
+          <div><strong style="color:var(--blue)">Клиент:</strong> И ещё — у нас есть 3D модель колонки, могу скинуть.</div>
+        </div>
+        <button class="topbar-btn primary" style="margin-top:12px;width:100%" onclick="this.textContent='⏳ Генерация брифа...';setTimeout(()=>this.textContent='✅ Бриф сгенерирован',2000)">🤖 Сгенерировать бриф</button>
+      </div>
+      <div class="card" style="border-color:rgba(137,64,250,.3)">
+        <div class="card-title mb-8" style="color:var(--accent)">📋 Сгенерированный бриф</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7">
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Проект:</strong> Промо-видео «Smart Speaker»</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Клиент:</strong> [Имя из чата]</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Формат:</strong> 30-45 сек, 16:9 (YouTube) + 9:16 (Instagram)</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Стиль:</strong> Минимализм, Apple-inspired</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Ключевые сцены:</strong> Продуктовая съёмка (2 цвета), демо голосового помощника, lifestyle</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Ассеты:</strong> 3D-модель (от клиента)</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Бюджет:</strong> ₽ 400-500K</div>
+          <div style="margin-bottom:8px"><strong style="color:var(--text)">Дедлайн:</strong> 3 недели</div>
+          <div><strong style="color:var(--text)">AI-рекомендация:</strong> <span style="color:var(--accent)">Использовать тренд «3D Product Animation» (+210%). Референсы из мудборда «Dark Studio Product».</span></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="topbar-btn">📤 В CRM</button>
+          <button class="topbar-btn">🎞 Раскадровка</button>
+          <button class="topbar-btn">✨ Промты</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CLIENT PORTAL ===== -->
+  <div class="page" id="page-portal">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Клиентский портал</div>
+        <div class="section-sub">Клиент видит статус проекта и оставляет комментарии</div>
+      </div>
+      <button class="topbar-btn primary">+ Пригласить клиента</button>
+    </div>
+    <div class="card mb-24">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--blue),#1d4ed8);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">TV</div>
+        <div><div style="font-size:15px;font-weight:600">TechVision — AI-ролик для стартапа</div><div style="font-size:12px;color:var(--text3)">Последняя активность: 2 часа назад</div></div>
+        <span class="tag purple" style="margin-left:auto">В продакшене</span>
+      </div>
+      <div style="display:flex;gap:4px;margin-bottom:16px">
+        <div style="flex:1;height:6px;border-radius:3px;background:var(--green)"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:var(--green)"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:var(--green)"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:var(--accent)"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:var(--border)"></div>
+        <div style="flex:1;height:6px;border-radius:3px;background:var(--border)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:16px">
+        <span style="color:var(--green)">Бриф ✓</span><span style="color:var(--green)">Концепт ✓</span><span style="color:var(--green)">Согласование ✓</span><span style="color:var(--accent);font-weight:600">Продакшн</span><span>Пост-продакшн</span><span>Сдача</span>
+      </div>
+      <div style="font-size:13px;color:var(--text2);padding:12px;background:rgba(137,64,250,.05);border:1px solid rgba(137,64,250,.15);border-radius:8px">
+        <strong style="color:var(--accent)">Статус:</strong> Рендер сцен 1-4 завершён. Сцены 5-7 в работе. Ожидаемая готовность черновика: через 3 дня.
+      </div>
+    </div>
+    <div class="card mb-24">
+      <div class="card-title mb-8">💬 Комментарии</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;gap:10px;font-size:13px"><div style="width:28px;height:28px;border-radius:6px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0">TV</div><div style="background:var(--surface);border:1px solid var(--border);padding:10px;border-radius:8px;flex:1"><strong style="color:var(--text)">TechVision</strong> <span style="color:var(--text3);font-size:11px">· 2 часа назад</span><br>Сцена 3 — отлично! Можно чуть больше контраста?</div></div>
+        <div style="display:flex;gap:10px;font-size:13px"><div style="width:28px;height:28px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;flex-shrink:0">МП</div><div style="background:rgba(137,64,250,.05);border:1px solid rgba(137,64,250,.15);padding:10px;border-radius:8px;flex:1"><strong style="color:var(--text)">StudioMIP</strong> <span style="color:var(--text3);font-size:11px">· 1 час назад</span><br>Принято! Увеличу контраст на этапе цветокоррекции. Будет готово в следующей итерации.</div></div>
+      </div>
+    </div>
+    <div class="grid grid-3">
+      <div class="card"><div class="card-title">📊 Активных порталов</div><div class="card-value">5</div><div class="card-sub">клиентов с доступом</div></div>
+      <div class="card"><div class="card-title">💬 Комментариев</div><div class="card-value">34</div><div class="card-sub">за эту неделю</div></div>
+      <div class="card"><div class="card-title">✅ Согласований</div><div class="card-value" style="color:var(--green)">12</div><div class="card-sub">одобренных итераций</div></div>
+    </div>
+  </div>
+
+  <!-- ===== PROPOSAL GENERATOR ===== -->
+  <div class="page" id="page-proposal">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">AI-генератор коммерческих предложений</div>
+        <div class="section-sub">Автоматическое КП на основе брифа и портфолио</div>
+      </div>
+    </div>
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-8">⚙ Параметры КП</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div><label class="calc-label">Название проекта</label><input class="calc-input" value="Промо-видео Smart Speaker"></div>
+          <div><label class="calc-label">Клиент</label><input class="calc-input" value="TechHome Inc."></div>
+          <div><label class="calc-label">Тип работы</label>
+            <select class="calc-select"><option>Product Video</option><option>Explainer Video</option><option>AI-ролик</option><option>Серия Reels</option><option>Корпоративный фильм</option></select>
+          </div>
+          <div><label class="calc-label">Бюджет клиента</label><input class="calc-input" value="₽ 400-500K"></div>
+          <div><label class="calc-label">Срок</label><input class="calc-input" value="3 недели"></div>
+          <button class="topbar-btn primary" style="margin-top:4px" onclick="this.textContent='⏳ Генерация КП...';setTimeout(()=>this.textContent='✅ КП готово',2000)">📄 Сгенерировать КП</button>
+        </div>
+      </div>
+      <div class="card" style="border-color:rgba(137,64,250,.3)">
+        <div class="card-title mb-8" style="color:var(--accent)">📄 Превью КП</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.7">
+          <div style="text-align:center;padding:16px 0;margin-bottom:12px;border-bottom:1px solid var(--border)">
+            <div style="font-size:18px;font-weight:700;color:var(--text)">Коммерческое предложение</div>
+            <div style="color:var(--accent)">StudioMIP — Минин и Пожарский</div>
+          </div>
+          <strong style="color:var(--text)">Проект:</strong> Промо-видео «Smart Speaker»<br><br>
+          <strong style="color:var(--text)">Что входит:</strong><br>
+          • Разработка концепции и раскадровка<br>
+          • 3D-анимация продукта (2 цветовых варианта)<br>
+          • Съёмка/генерация lifestyle-сцен (AI)<br>
+          • Саунд-дизайн и музыка<br>
+          • Цветокоррекция и финальный рендер<br>
+          • Адаптация под 9:16 (Instagram)<br><br>
+          <strong style="color:var(--text)">Стоимость:</strong> <span style="color:var(--accent);font-weight:600">₽ 450,000</span><br>
+          <strong style="color:var(--text)">Срок:</strong> 18 рабочих дней<br><br>
+          <em style="color:var(--text3)">+ 3 релевантных кейса из портфолио</em>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button class="topbar-btn primary">📤 Отправить клиенту</button>
+          <button class="topbar-btn">📝 Редактировать</button>
+          <button class="topbar-btn">📥 PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CALCULATOR ===== -->
+  <div class="page" id="page-calculator">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Калькулятор стоимости</div>
+        <div class="section-sub">Автоматический расчёт стоимости проекта</div>
+      </div>
+    </div>
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-16">⚙ Параметры проекта</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div><label class="calc-label">Тип видео</label><select class="calc-select" id="calc-type" onchange="calcPrice()"><option value="product">Product Video</option><option value="explainer">Explainer Video</option><option value="ai">AI-ролик</option><option value="reels">Серия Reels (5 шт)</option><option value="corporate">Корпоративный фильм</option><option value="music">Music Video</option></select></div>
+          <div><label class="calc-label">Длительность (секунды)</label><input class="calc-input" id="calc-dur" type="number" value="30" onchange="calcPrice()"></div>
+          <div><label class="calc-label">3D-анимация</label><select class="calc-select" id="calc-3d" onchange="calcPrice()"><option value="0">Нет</option><option value="1" selected>Базовая</option><option value="2">Продвинутая</option></select></div>
+          <div><label class="calc-label">AI-генерация (Sora/Runway)</label><select class="calc-select" id="calc-ai" onchange="calcPrice()"><option value="0">Нет</option><option value="1" selected>Да</option></select></div>
+          <div><label class="calc-label">Адаптация форматов</label><select class="calc-select" id="calc-adapt" onchange="calcPrice()"><option value="0">Только 16:9</option><option value="1" selected>16:9 + 9:16</option><option value="2">16:9 + 9:16 + 1:1</option></select></div>
+          <div><label class="calc-label">Срочность</label><select class="calc-select" id="calc-rush" onchange="calcPrice()"><option value="1">Стандартная (3-4 недели)</option><option value="1.3">Срочная (2 недели) +30%</option><option value="1.5">Экстренная (1 неделя) +50%</option></select></div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;justify-content:center;align-items:center">
+        <div class="calc-result" style="width:100%;margin-bottom:20px">
+          <div style="font-size:12px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Итоговая стоимость</div>
+          <div class="calc-result-value" id="calc-total">₽ 385,000</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:8px">Срок: <span id="calc-deadline">18 рабочих дней</span></div>
+        </div>
+        <div style="width:100%">
+          <div class="card-title mb-8">Детализация:</div>
+          <div id="calc-breakdown" style="font-size:13px;color:var(--text2);display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between"><span>Базовая стоимость (Product)</span><span style="color:var(--text)">₽ 250,000</span></div>
+            <div style="display:flex;justify-content:space-between"><span>3D-анимация (базовая)</span><span style="color:var(--text)">₽ 60,000</span></div>
+            <div style="display:flex;justify-content:space-between"><span>AI-генерация</span><span style="color:var(--text)">₽ 40,000</span></div>
+            <div style="display:flex;justify-content:space-between"><span>Адаптация (9:16)</span><span style="color:var(--text)">₽ 35,000</span></div>
+            <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-weight:600"><span style="color:var(--text)">Итого</span><span style="color:var(--accent)">₽ 385,000</span></div>
+          </div>
+        </div>
+        <button class="topbar-btn primary" style="margin-top:16px;width:100%">📄 Создать КП с этой ценой</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TASKS ===== -->
+  <div class="page" id="page-tasks">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Распределение задач</div>
+        <div class="section-sub">AI назначает задачи по навыкам и загрузке команды</div>
+      </div>
+      <button class="topbar-btn primary">+ Новая задача</button>
+    </div>
+    <div class="grid grid-4 mb-24">
+      <div class="card"><div class="card-title">👥 Команда</div><div class="card-value">6</div><div class="card-sub">человек</div></div>
+      <div class="card"><div class="card-title">📋 Активных задач</div><div class="card-value">18</div><div class="card-sub">в работе</div></div>
+      <div class="card"><div class="card-title">⚡ Загрузка</div><div class="card-value" style="color:var(--yellow)">78%</div><div class="card-sub">средняя по команде</div></div>
+      <div class="card"><div class="card-title">✅ Выполнено</div><div class="card-value" style="color:var(--green)">42</div><div class="card-sub">за эту неделю</div></div>
+    </div>
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-8">👥 Команда и загрузка</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="team-member"><div class="team-avatar" style="background:linear-gradient(135deg,#8940FA,#c084fc)">АМ</div><div class="team-info"><div class="team-name">Алексей М.</div><div class="team-role">3D / Motion</div></div><div class="team-load"><div style="font-size:11px;color:var(--red);text-align:right;margin-bottom:2px">92%</div><div class="load-bar"><div class="load-fill" style="width:92%;background:var(--red)"></div></div></div></div>
+          <div class="team-member"><div class="team-avatar" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">ЕК</div><div class="team-info"><div class="team-name">Елена К.</div><div class="team-role">AI-генерация</div></div><div class="team-load"><div style="font-size:11px;color:var(--yellow);text-align:right;margin-bottom:2px">75%</div><div class="load-bar"><div class="load-fill" style="width:75%;background:var(--yellow)"></div></div></div></div>
+          <div class="team-member"><div class="team-avatar" style="background:linear-gradient(135deg,#22c55e,#16a34a)">ДП</div><div class="team-info"><div class="team-name">Дмитрий П.</div><div class="team-role">Режиссёр / Продюсер</div></div><div class="team-load"><div style="font-size:11px;color:var(--yellow);text-align:right;margin-bottom:2px">68%</div><div class="load-bar"><div class="load-fill" style="width:68%;background:var(--yellow)"></div></div></div></div>
+          <div class="team-member"><div class="team-avatar" style="background:linear-gradient(135deg,#eab308,#ca8a04)">НС</div><div class="team-info"><div class="team-name">Наталья С.</div><div class="team-role">Саунд-дизайн</div></div><div class="team-load"><div style="font-size:11px;color:var(--green);text-align:right;margin-bottom:2px">45%</div><div class="load-bar"><div class="load-fill" style="width:45%;background:var(--green)"></div></div></div></div>
+          <div class="team-member"><div class="team-avatar" style="background:linear-gradient(135deg,#ef4444,#dc2626)">ОВ</div><div class="team-info"><div class="team-name">Олег В.</div><div class="team-role">Цветокоррекция</div></div><div class="team-load"><div style="font-size:11px;color:var(--green);text-align:right;margin-bottom:2px">52%</div><div class="load-bar"><div class="load-fill" style="width:52%;background:var(--green)"></div></div></div></div>
+          <div class="team-member"><div class="team-avatar" style="background:linear-gradient(135deg,#a855f7,#9333ea)">ИЛ</div><div class="team-info"><div class="team-name">Ирина Л.</div><div class="team-role">Монтаж / VFX</div></div><div class="team-load"><div style="font-size:11px;color:var(--yellow);text-align:right;margin-bottom:2px">80%</div><div class="load-bar"><div class="load-fill" style="width:80%;background:var(--yellow)"></div></div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">🤖 AI-рекомендации по распределению</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:10px;background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:8px;font-size:13px"><strong style="color:var(--red)">⚠ Перегруз:</strong> Алексей М. загружен на 92%. Рекомендую передать задачу «рендер сцен 5-7» (TechVision) на Ирину Л. (VFX, 80%).</div>
+          <div style="padding:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:8px;font-size:13px"><strong style="color:var(--green)">Свободен:</strong> Наталья С. (45%) может взять саунд-дизайн для проекта CloudApp (сейчас без исполнителя).</div>
+          <div style="padding:10px;background:rgba(137,64,250,.05);border:1px solid rgba(137,64,250,.15);border-radius:8px;font-size:13px"><strong style="color:var(--accent)">Новый проект:</strong> Бриф NeoBank (FinTech ролик) — оптимальная команда: Дмитрий П. (продюсер) + Елена К. (AI) + Олег В. (цвет).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TIME TRACKING ===== -->
+  <div class="page" id="page-timetrack">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Таймтрекинг</div>
+        <div class="section-sub">Учёт времени по проектам с AI-аналитикой</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="topbar-btn">Сегодня</button>
+        <button class="topbar-btn primary">Неделя</button>
+        <button class="topbar-btn">Месяц</button>
+      </div>
+    </div>
+    <div class="grid grid-4 mb-24">
+      <div class="card"><div class="card-title">⏱ Часов за неделю</div><div class="card-value">186</div><div class="card-sub">команда (6 чел.)</div></div>
+      <div class="card"><div class="card-title">📊 Продуктивность</div><div class="card-value" style="color:var(--green)">82%</div><div class="card-sub" style="color:var(--green)">+5% vs прошлая неделя</div></div>
+      <div class="card"><div class="card-title">💰 Стоимость часа</div><div class="card-value">₽ 2,800</div><div class="card-sub">средняя по команде</div></div>
+      <div class="card"><div class="card-title">🎯 Прибыльность</div><div class="card-value" style="color:var(--green)">+34%</div><div class="card-sub">маржа проектов</div></div>
+    </div>
+    <div class="card mb-24">
+      <div class="card-title mb-8">📊 Время по проектам (неделя)</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">TechVision — AI-ролик</span><span>42ч / 60ч</span></div><div class="timeline-bar" style="background:var(--border)"><div class="timeline-segment" style="left:0;width:70%;background:var(--accent)">42ч</div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">CloudApp — Explainer</span><span>28ч / 40ч</span></div><div class="timeline-bar" style="background:var(--border)"><div class="timeline-segment" style="left:0;width:70%;background:var(--blue)">28ч</div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">MetalGroup — Корп. фильм</span><span>18ч / 20ч</span></div><div class="timeline-bar" style="background:var(--border)"><div class="timeline-segment" style="left:0;width:90%;background:var(--green)">18ч</div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--text)">BrandX — Promo</span><span>15ч / 35ч</span></div><div class="timeline-bar" style="background:var(--border)"><div class="timeline-segment" style="left:0;width:43%;background:var(--yellow)">15ч</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title mb-8">🤖 AI-инсайты продуктивности</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+        <div style="padding:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:8px"><strong style="color:var(--green)">Эффективно:</strong> AI-генерация сократила время на проекте TechVision на 35% по сравнению с аналогичными проектами без AI.</div>
+        <div style="padding:10px;background:rgba(234,179,8,.05);border:1px solid rgba(234,179,8,.15);border-radius:8px"><strong style="color:var(--yellow)">Внимание:</strong> Проект BrandX отстаёт от графика (43% за 60% срока). Рекомендую увеличить аллокацию или обсудить с клиентом.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AUTO-POSTING ===== -->
+  <div class="page" id="page-autopost">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Auto-posting</div>
+        <div class="section-sub">Публикация контента на все площадки по расписанию</div>
+      </div>
+      <button class="topbar-btn primary">+ Запланировать пост</button>
+    </div>
+    <div class="grid grid-4 mb-24">
+      <div class="card"><div class="card-title">📤 Опубликовано</div><div class="card-value" style="color:var(--green)">24</div><div class="card-sub">за этот месяц</div></div>
+      <div class="card"><div class="card-title">📅 В очереди</div><div class="card-value" style="color:var(--accent)">8</div><div class="card-sub">запланировано</div></div>
+      <div class="card"><div class="card-title">📊 Охват</div><div class="card-value">145K</div><div class="card-sub">суммарный за месяц</div></div>
+      <div class="card"><div class="card-title">💬 Вовлечённость</div><div class="card-value" style="color:var(--green)">4.7%</div><div class="card-sub">средний engagement</div></div>
+    </div>
+    <div class="card mb-24">
+      <div class="card-title mb-8">📅 Расписание публикаций</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Контент</th><th>Платформы</th><th>Дата/время</th><th>Статус</th><th>AI-рекомендация</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--text);font-weight:500">Product Reel — SoundMax</td><td><span class="tag">Instagram</span> <span class="tag">TikTok</span></td><td>Вт, 19:00</td><td><span class="tag green">Запланировано</span></td><td style="font-size:12px">Оптимальное время ✓</td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Behind the Scenes — TechVision</td><td><span class="tag">YouTube</span> <span class="tag">Instagram</span></td><td>Ср, 18:00</td><td><span class="tag green">Запланировано</span></td><td style="font-size:12px">Оптимальное время ✓</td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Showreel Q1 2026</td><td><span class="tag">Behance</span> <span class="tag">Vimeo</span> <span class="tag">Dribbble</span></td><td>Чт, 10:00</td><td><span class="tag yellow">Подготовка</span></td><td style="font-size:12px">Среда лучше для Behance</td></tr>
+            <tr><td style="color:var(--text);font-weight:500">AI Transformation Reel</td><td><span class="tag">TikTok</span> <span class="tag">Instagram</span></td><td>Пт, 20:00</td><td><span class="tag green">Запланировано</span></td><td style="font-size:12px;color:var(--green)">Trending format +120%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== QC ===== -->
+  <div class="page" id="page-qc">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">AI Quality Check</div>
+        <div class="section-sub">AI оценивает видео на соответствие трендам и брифу перед сдачей</div>
+      </div>
+    </div>
+    <div class="card mb-24">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+        <div style="width:120px;height:68px;border-radius:8px;background:linear-gradient(135deg,#1a0a2e,#0a0a1a);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🎬</div>
+        <div><div style="font-size:15px;font-weight:600">TechVision — AI-ролик для стартапа (v2 draft)</div><div style="font-size:12px;color:var(--text3)">Загружен 2 часа назад · 32 сек · 1920x1080 · H.264</div></div>
+        <button class="topbar-btn primary" style="margin-left:auto;white-space:nowrap">🔍 Проверить</button>
+      </div>
+    </div>
+    <div class="grid grid-4 mb-24">
+      <div class="card" style="text-align:center">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Общий балл</div>
+        <div style="width:80px;height:80px;border-radius:50%;background:conic-gradient(var(--green) 0% 87%,var(--border) 87% 100%);margin:0 auto 8px;display:flex;align-items:center;justify-content:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--green)">87</div></div>
+        <div style="font-size:11px;color:var(--green)">Отлично</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Соответствие брифу</div>
+        <div style="width:80px;height:80px;border-radius:50%;background:conic-gradient(var(--accent) 0% 92%,var(--border) 92% 100%);margin:0 auto 8px;display:flex;align-items:center;justify-content:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--accent)">92</div></div>
+        <div style="font-size:11px;color:var(--accent)">Высокое</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Трендовость</div>
+        <div style="width:80px;height:80px;border-radius:50%;background:conic-gradient(var(--green) 0% 85%,var(--border) 85% 100%);margin:0 auto 8px;display:flex;align-items:center;justify-content:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--green)">85</div></div>
+        <div style="font-size:11px;color:var(--green)">Актуально</div>
+      </div>
+      <div class="card" style="text-align:center">
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;margin-bottom:8px">Техн. качество</div>
+        <div style="width:80px;height:80px;border-radius:50%;background:conic-gradient(var(--yellow) 0% 78%,var(--border) 78% 100%);margin:0 auto 8px;display:flex;align-items:center;justify-content:center"><div style="width:64px;height:64px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:var(--yellow)">78</div></div>
+        <div style="font-size:11px;color:var(--yellow)">Доработать</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title mb-8">📋 Детальный отчёт AI</div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+        <div style="padding:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:8px">✅ <strong>Стиль:</strong> Соответствует тренду «Cinematic AI B-roll». Правильная цветовая палитра и lighting.</div>
+        <div style="padding:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:8px">✅ <strong>Бриф:</strong> Все ключевые сцены из раскадровки присутствуют. Хронометраж в рамках.</div>
+        <div style="padding:10px;background:rgba(234,179,8,.05);border:1px solid rgba(234,179,8,.15);border-radius:8px">⚠ <strong>Контраст:</strong> Сцена 3 (0:08-0:12) — контраст ниже рекомендуемого на 15%. Клиент уже запросил доработку.</div>
+        <div style="padding:10px;background:rgba(234,179,8,.05);border:1px solid rgba(234,179,8,.15);border-radius:8px">⚠ <strong>Аудио:</strong> Уровень громкости на 0:24-0:28 выше -6dB LUFS. Рекомендую нормализовать.</div>
+        <div style="padding:10px;background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:8px">✅ <strong>Конкурентный анализ:</strong> Качество выше среднего по рынку. Ближайший аналог VideoSmile — ваш вариант выигрывает в lighting и pacing.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TELEGRAM BOT ===== -->
+  <div class="page" id="page-tgbot">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Telegram-бот студии</div>
+        <div class="section-sub">Клиент пишет в бот — AI отвечает и создаёт заявку в CRM</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px"><span class="status-dot"></span><span style="font-size:12px;color:var(--green)">Бот активен</span></div>
+    </div>
+    <div class="grid grid-4 mb-24">
+      <div class="card"><div class="card-title">💬 Диалогов</div><div class="card-value">89</div><div class="card-sub">за месяц</div></div>
+      <div class="card"><div class="card-title">📋 Заявок создано</div><div class="card-value" style="color:var(--accent)">23</div><div class="card-sub">автоматически в CRM</div></div>
+      <div class="card"><div class="card-title">⏱ Ср. ответ</div><div class="card-value" style="color:var(--green)">8 сек</div><div class="card-sub">время реакции</div></div>
+      <div class="card"><div class="card-title">🔄 Конверсия</div><div class="card-value">26%</div><div class="card-sub">диалог → заявка</div></div>
+    </div>
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-8">💬 Последние диалоги</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="bot-log"><div class="bot-log-time">14:23</div><div class="bot-log-type"><span class="tag green">Заявка</span></div><div class="bot-log-msg"><strong style="color:var(--text)">@ivan_petrov:</strong> Нужен промо-ролик для запуска приложения → <span style="color:var(--accent)">Создана заявка #47</span></div></div>
+          <div class="bot-log"><div class="bot-log-time">13:45</div><div class="bot-log-type"><span class="tag blue">FAQ</span></div><div class="bot-log-msg"><strong style="color:var(--text)">@maria_k:</strong> Сколько стоит видео для Instagram? → AI ответил с калькулятором</div></div>
+          <div class="bot-log"><div class="bot-log-time">12:10</div><div class="bot-log-type"><span class="tag green">Заявка</span></div><div class="bot-log-msg"><strong style="color:var(--text)">@startup_ceo:</strong> Хотим explainer video для SaaS → <span style="color:var(--accent)">Создана заявка #46</span></div></div>
+          <div class="bot-log"><div class="bot-log-time">11:30</div><div class="bot-log-type"><span class="tag">Инфо</span></div><div class="bot-log-msg"><strong style="color:var(--text)">@design_studio:</strong> Какие у вас кейсы по 3D? → AI отправил портфолио</div></div>
+          <div class="bot-log"><div class="bot-log-time">10:05</div><div class="bot-log-type"><span class="tag purple">Статус</span></div><div class="bot-log-msg"><strong style="color:var(--text)">@techvision_pm:</strong> Статус нашего проекта? → AI показал прогресс из CRM</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">⚙ Настройки бота</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface);border-radius:8px"><span style="font-size:13px">Автоответ на FAQ</span><span class="tag green">Включено</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface);border-radius:8px"><span style="font-size:13px">Автосоздание заявок</span><span class="tag green">Включено</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface);border-radius:8px"><span style="font-size:13px">Отправка портфолио</span><span class="tag green">Включено</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface);border-radius:8px"><span style="font-size:13px">Статус проекта для клиентов</span><span class="tag green">Включено</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface);border-radius:8px"><span style="font-size:13px">Уведомления команде</span><span class="tag green">Включено</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:var(--surface);border-radius:8px"><span style="font-size:13px">Калькулятор цен</span><span class="tag yellow">Бета</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   </div><!-- /content -->
 </div><!-- /main -->
 </div><!-- /app -->
@@ -1133,8 +1965,23 @@ const pageTitles = {
   dashboard: 'Дашборд студии',
   trends: 'AI Тренд-Аналитик',
   competitors: 'Мониторинг конкурентов',
+  roi: 'ROI аналитика',
+  heatmap: 'Heatmap активности',
+  forecast: 'AI-прогнозирование',
   prompts: 'AI Промт-генератор',
+  versions: 'Версионность промтов',
   library: 'Библиотека промтов',
+  moodboard: 'Mood Board',
+  storyboard: 'AI Раскадровка',
+  autobrief: 'Автогенерация брифа',
+  portal: 'Клиентский портал',
+  proposal: 'Генератор КП',
+  calculator: 'Калькулятор стоимости',
+  tasks: 'Распределение задач',
+  timetrack: 'Таймтрекинг',
+  autopost: 'Auto-posting',
+  qc: 'AI Quality Check',
+  tgbot: 'Telegram-бот',
   assistant: 'AI-ассистент',
   crm: 'CRM проектов',
   integrations: 'Интеграции'
@@ -1213,6 +2060,62 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     this.classList.toggle('active');
   });
 });
+
+// Heatmap
+(function(){
+  const c=document.getElementById('heatmap-container');
+  if(!c)return;
+  const days=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+  const data=[[2,1,1,0,0,0,1,2,4,5,6,5,4,5,6,7,8,9,10,9,8,6,4,3],[3,1,1,0,0,0,1,3,5,6,7,6,5,6,7,8,9,10,10,10,9,7,5,3],[2,1,0,0,0,0,1,3,5,7,8,7,6,6,7,8,9,10,10,9,8,6,4,3],[2,1,1,0,0,0,1,2,4,6,7,6,5,5,6,7,8,9,10,9,8,7,5,3],[3,2,1,0,0,0,1,2,4,5,6,5,4,4,5,6,7,8,9,9,8,7,5,4],[4,3,2,1,0,0,0,1,2,3,4,5,5,5,5,5,6,7,8,8,7,6,5,4],[3,2,1,1,0,0,0,1,2,3,4,4,5,5,5,5,5,6,7,8,7,6,5,3]];
+  days.forEach((d,i)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;gap:2px;align-items:center';
+    const label=document.createElement('div');
+    label.style.cssText='font-size:11px;color:#666;min-width:60px;text-align:right;padding-right:6px';
+    label.textContent=d;
+    row.appendChild(label);
+    data[i].forEach(v=>{
+      const cell=document.createElement('div');
+      const op=v/10;
+      cell.style.cssText=`flex:1;height:22px;border-radius:3px;background:rgba(137,64,250,${Math.max(op,0.05)});cursor:pointer;transition:transform .15s`;
+      cell.onmouseenter=()=>cell.style.transform='scale(1.2)';
+      cell.onmouseleave=()=>cell.style.transform='';
+      cell.title=`${d} ${data[i].indexOf(v)}:00 — ${Math.round(v*10)}%`;
+      row.appendChild(cell);
+    });
+    c.appendChild(row);
+  });
+})();
+
+// Calculator
+function calcPrice(){
+  const prices={product:250000,explainer:180000,ai:200000,reels:150000,corporate:400000,music:300000};
+  const t=document.getElementById('calc-type').value;
+  const dur=parseInt(document.getElementById('calc-dur').value)||30;
+  const d3=parseInt(document.getElementById('calc-3d').value);
+  const ai=parseInt(document.getElementById('calc-ai').value);
+  const adapt=parseInt(document.getElementById('calc-adapt').value);
+  const rush=parseFloat(document.getElementById('calc-rush').value);
+  let base=prices[t]||250000;
+  if(dur>30)base+=Math.floor((dur-30)/10)*30000;
+  const d3cost=[0,60000,120000][d3];
+  const aiCost=ai?40000:0;
+  const adaptCost=[0,35000,55000][adapt];
+  const sub=base+d3cost+aiCost+adaptCost;
+  const total=Math.round(sub*rush);
+  const deadlines={1:'18 рабочих дней',1.3:'10 рабочих дней',1.5:'5 рабочих дней'};
+  document.getElementById('calc-total').textContent='₽ '+total.toLocaleString('ru');
+  document.getElementById('calc-deadline').textContent=deadlines[rush]||'18 рабочих дней';
+  const names={product:'Product Video',explainer:'Explainer Video',ai:'AI-ролик',reels:'Серия Reels',corporate:'Корп. фильм',music:'Music Video'};
+  const d3names=['','Базовая','Продвинутая'];
+  let bd=`<div style="display:flex;justify-content:space-between"><span>Базовая (${names[t]})</span><span style="color:var(--text)">₽ ${base.toLocaleString('ru')}</span></div>`;
+  if(d3cost)bd+=`<div style="display:flex;justify-content:space-between"><span>3D (${d3names[d3]})</span><span style="color:var(--text)">₽ ${d3cost.toLocaleString('ru')}</span></div>`;
+  if(aiCost)bd+=`<div style="display:flex;justify-content:space-between"><span>AI-генерация</span><span style="color:var(--text)">₽ ${aiCost.toLocaleString('ru')}</span></div>`;
+  if(adaptCost)bd+=`<div style="display:flex;justify-content:space-between"><span>Адаптация форматов</span><span style="color:var(--text)">₽ ${adaptCost.toLocaleString('ru')}</span></div>`;
+  if(rush>1)bd+=`<div style="display:flex;justify-content:space-between"><span>Срочность (x${rush})</span><span style="color:var(--red)">+₽ ${(total-sub).toLocaleString('ru')}</span></div>`;
+  bd+=`<div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px solid var(--border);font-weight:600"><span style="color:var(--text)">Итого</span><span style="color:var(--accent)">₽ ${total.toLocaleString('ru')}</span></div>`;
+  document.getElementById('calc-breakdown').innerHTML=bd;
+}
 </script>
 </body>
 </html>
