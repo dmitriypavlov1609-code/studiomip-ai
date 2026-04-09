@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudioMIP AI Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;--surface:#111;--card:#161616;--border:#222;
+  --accent:#8940FA;--accent2:#a855f7;--accent-glow:rgba(137,64,250,.15);
+  --text:#e5e5e5;--text2:#999;--text3:#666;
+  --green:#22c55e;--red:#ef4444;--yellow:#eab308;--blue:#3b82f6;
+  --sidebar-w:260px;
+}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+a{color:var(--accent);text-decoration:none}
+
+/* Layout */
+.app{display:flex;height:100vh}
+.sidebar{width:var(--sidebar-w);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;transition:transform .3s}
+.sidebar-header{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
+.sidebar-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+.sidebar-logo .logo-icon{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#c084fc);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff}
+.sidebar-logo span{color:var(--text)}
+.sidebar-logo .ai-badge{font-size:10px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:4px;margin-left:4px;font-weight:600}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0}
+.nav-section{padding:8px 20px 4px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-size:14px;color:var(--text2);transition:all .15s;border-left:3px solid transparent;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.03);color:var(--text)}
+.nav-item.active{background:var(--accent-glow);color:var(--accent);border-left-color:var(--accent);font-weight:500}
+.nav-item .icon{width:20px;text-align:center;font-size:16px;flex-shrink:0}
+.nav-item .badge{position:absolute;right:16px;background:var(--accent);color:#fff;font-size:10px;padding:1px 6px;border-radius:8px;font-weight:600}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
+.sidebar-footer .user-row{display:flex;align-items:center;gap:8px}
+.sidebar-footer .avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#8940FA,#c084fc);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff}
+
+/* Main content */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:56px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--surface);flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:16px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+.topbar-btn:hover{border-color:var(--accent);color:var(--accent)}
+.topbar-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.topbar-btn.primary:hover{background:#7c35e6}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.content{flex:1;overflow-y:auto;padding:24px}
+.burger{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer}
+
+/* Page sections */
+.page{display:none}
+.page.active{display:block}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color .2s}
+.card:hover{border-color:#333}
+.card-title{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.card-value{font-size:28px;font-weight:700}
+.card-sub{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* Grid */
+.grid{display:grid;gap:16px}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-1{grid-template-columns:1fr}
+
+/* Section headers */
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.section-title{font-size:18px;font-weight:600}
+.section-sub{font-size:13px;color:var(--text2)}
+.mb-24{margin-bottom:24px}
+.mb-16{margin-bottom:16px}
+.mb-8{margin-bottom:8px}
+.mt-24{margin-top:24px}
+
+/* Tags */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;border:1px solid var(--border);color:var(--text2)}
+.tag.green{border-color:rgba(34,197,94,.3);color:var(--green);background:rgba(34,197,94,.08)}
+.tag.red{border-color:rgba(239,68,68,.3);color:var(--red);background:rgba(239,68,68,.08)}
+.tag.yellow{border-color:rgba(234,179,8,.3);color:var(--yellow);background:rgba(234,179,8,.08)}
+.tag.blue{border-color:rgba(59,130,246,.3);color:var(--blue);background:rgba(59,130,246,.08)}
+.tag.purple{border-color:rgba(137,64,250,.3);color:var(--accent);background:rgba(137,64,250,.08)}
+
+/* Tables */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 12px;color:var(--text3);font-weight:500;border-bottom:1px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* Trend bars */
+.trend-bar{height:6px;border-radius:3px;background:var(--border);overflow:hidden;width:100%}
+.trend-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* Chart placeholder */
+.chart-placeholder{height:200px;border-radius:8px;background:linear-gradient(135deg,rgba(137,64,250,.05),rgba(137,64,250,.02));border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px}
+.mini-chart{display:flex;align-items:flex-end;gap:3px;height:40px}
+.mini-chart .bar{width:6px;border-radius:2px;background:var(--accent);opacity:.7;transition:height .3s}
+
+/* Prompt cards */
+.prompt-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer;transition:all .2s}
+.prompt-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(137,64,250,.1)}
+.prompt-card .prompt-text{font-size:13px;color:var(--text);line-height:1.5;margin-bottom:12px;font-family:'SF Mono',monospace;background:rgba(137,64,250,.05);padding:10px 12px;border-radius:6px;border:1px solid rgba(137,64,250,.1)}
+.prompt-card .prompt-meta{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Competitor cards */
+.competitor-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:flex-start}
+.competitor-avatar{width:44px;height:44px;border-radius:10px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.competitor-info{flex:1;min-width:0}
+.competitor-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.competitor-handle{font-size:12px;color:var(--text3);margin-bottom:8px}
+.competitor-stats{display:flex;gap:16px;font-size:12px;color:var(--text2)}
+.competitor-stats span{display:flex;align-items:center;gap:4px}
+
+/* CRM pipeline */
+.pipeline{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px}
+.pipeline-col{min-width:220px;flex:1;background:var(--surface);border-radius:12px;padding:12px;border:1px solid var(--border)}
+.pipeline-col-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.pipeline-col-title{font-size:13px;font-weight:600}
+.pipeline-col-count{font-size:11px;color:var(--text3);background:var(--card);padding:2px 8px;border-radius:4px}
+.pipeline-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.pipeline-card:hover{border-color:var(--accent)}
+.pipeline-card-title{font-size:13px;font-weight:500;margin-bottom:6px}
+.pipeline-card-client{font-size:11px;color:var(--text3);margin-bottom:8px}
+.pipeline-card-footer{display:flex;justify-content:space-between;align-items:center}
+.pipeline-card-price{font-size:12px;font-weight:600;color:var(--accent)}
+.pipeline-card-date{font-size:11px;color:var(--text3)}
+
+/* Integration cards */
+.integration-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.integration-card:hover{border-color:var(--accent)}
+.integration-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.integration-info{flex:1}
+.integration-name{font-size:14px;font-weight:500}
+.integration-desc{font-size:12px;color:var(--text3)}
+.integration-status{font-size:11px;padding:4px 10px;border-radius:6px;font-weight:500}
+
+/* Chat */
+.chat-container{display:flex;flex-direction:column;height:calc(100vh - 56px - 48px)}
+.chat-messages{flex:1;overflow-y:auto;padding:20px 0}
+.chat-msg{display:flex;gap:10px;margin-bottom:16px;max-width:85%}
+.chat-msg.ai{margin-right:auto}
+.chat-msg.user{margin-left:auto;flex-direction:row-reverse}
+.chat-msg-avatar{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.chat-msg.ai .chat-msg-avatar{background:linear-gradient(135deg,var(--accent),#c084fc);color:#fff}
+.chat-msg.user .chat-msg-avatar{background:var(--border);color:var(--text2)}
+.chat-msg-bubble{padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5}
+.chat-msg.ai .chat-msg-bubble{background:var(--card);border:1px solid var(--border);color:var(--text)}
+.chat-msg.user .chat-msg-bubble{background:var(--accent);color:#fff}
+.chat-input-area{display:flex;gap:8px;padding:16px 0 0}
+.chat-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border-color .15s}
+.chat-input:focus{border-color:var(--accent)}
+.chat-send{width:40px;height:40px;border-radius:10px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s}
+.chat-send:hover{background:#7c35e6}
+
+/* Library */
+.library-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s}
+.filter-btn:hover,.filter-btn.active{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#444}
+
+/* Responsive */
+@media(max-width:1200px){.grid-4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){
+  .grid-4,.grid-3{grid-template-columns:repeat(2,1fr)}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .burger{display:block}
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99}
+  .overlay.show{display:block}
+}
+@media(max-width:600px){
+  .grid-4,.grid-3,.grid-2{grid-template-columns:1fr}
+  .content{padding:16px}
+  .pipeline{flex-direction:column}
+  .pipeline-col{min-width:auto}
+}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page.active .card,.page.active .prompt-card,.page.active .competitor-card,.page.active .pipeline-col,.page.active .integration-card{animation:fadeIn .3s ease both}
+.page.active .grid > *:nth-child(1){animation-delay:.05s}
+.page.active .grid > *:nth-child(2){animation-delay:.1s}
+.page.active .grid > *:nth-child(3){animation-delay:.15s}
+.page.active .grid > *:nth-child(4){animation-delay:.2s}
+.page.active .grid > *:nth-child(5){animation-delay:.25s}
+.page.active .grid > *:nth-child(6){animation-delay:.3s}
+
+/* Pulse */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.pulse{animation:pulse 2s ease infinite}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<div class="app">
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-icon">M</div>
+      <span>StudioMIP</span>
+      <span class="ai-badge">AI</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Главная</div>
+    <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard',this)">
+      <span class="icon">📊</span> Дашборд
+    </div>
+
+    <div class="nav-section">AI-аналитика</div>
+    <div class="nav-item" data-page="trends" onclick="navigate('trends',this)">
+      <span class="icon">🔥</span> Тренд-аналитик
+      <span class="badge">12</span>
+    </div>
+    <div class="nav-item" data-page="competitors" onclick="navigate('competitors',this)">
+      <span class="icon">🎯</span> Конкуренты
+    </div>
+
+    <div class="nav-section">Контент</div>
+    <div class="nav-item" data-page="prompts" onclick="navigate('prompts',this)">
+      <span class="icon">✨</span> Промт-генератор
+    </div>
+    <div class="nav-item" data-page="library" onclick="navigate('library',this)">
+      <span class="icon">📚</span> Библиотека
+      <span class="badge">48</span>
+    </div>
+
+    <div class="nav-section">Инструменты</div>
+    <div class="nav-item" data-page="assistant" onclick="navigate('assistant',this)">
+      <span class="icon">🤖</span> AI-ассистент
+    </div>
+    <div class="nav-item" data-page="crm" onclick="navigate('crm',this)">
+      <span class="icon">📋</span> CRM проектов
+    </div>
+    <div class="nav-item" data-page="integrations" onclick="navigate('integrations',this)">
+      <span class="icon">🔗</span> Интеграции
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="avatar">МП</div>
+      <div>
+        <div style="font-size:13px;color:var(--text);font-weight:500">Минин и Пожарский</div>
+        <div style="font-size:11px;color:var(--text3)">Pro план</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="burger" onclick="toggleSidebar()">☰</button>
+      <span class="topbar-title" id="topbar-title">Дашборд студии</span>
+    </div>
+    <div class="topbar-right">
+      <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)">
+        <span class="status-dot"></span> AI Online
+      </span>
+      <button class="topbar-btn">⚙ Настройки</button>
+    </div>
+  </header>
+
+  <div class="content">
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="page active" id="page-dashboard">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Обзор студии</div>
+        <div class="section-sub">Данные обновлены 5 мин назад</div>
+      </div>
+      <button class="topbar-btn primary">↻ Обновить данные</button>
+    </div>
+
+    <div class="grid grid-4 mb-24">
+      <div class="card">
+        <div class="card-title"><span>📈</span> Трендов найдено</div>
+        <div class="card-value" style="color:var(--accent)">127</div>
+        <div class="card-sub" style="color:var(--green)">+23 за сегодня</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>🎬</span> Промтов сгенерировано</div>
+        <div class="card-value">384</div>
+        <div class="card-sub" style="color:var(--green)">+45 за неделю</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>📋</span> Активных проектов</div>
+        <div class="card-value">8</div>
+        <div class="card-sub">3 в продакшене</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>🎯</span> Конкурентов</div>
+        <div class="card-value">15</div>
+        <div class="card-sub">мониторинг 24/7</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2 mb-24">
+      <div class="card">
+        <div class="card-title mb-8">🔥 Топ трендов сегодня</div>
+        <table>
+          <tr><td style="color:var(--text)">Cinematic AI B-roll</td><td><div class="trend-bar"><div class="trend-bar-fill" style="width:92%;background:var(--accent)"></div></div></td><td style="color:var(--green)">+340%</td></tr>
+          <tr><td style="color:var(--text)">3D Product Animation</td><td><div class="trend-bar"><div class="trend-bar-fill" style="width:78%;background:var(--accent2)"></div></div></td><td style="color:var(--green)">+210%</td></tr>
+          <tr><td style="color:var(--text)">AI Fashion Lookbook</td><td><div class="trend-bar"><div class="trend-bar-fill" style="width:65%;background:var(--blue)"></div></div></td><td style="color:var(--green)">+185%</td></tr>
+          <tr><td style="color:var(--text)">Morphing Transitions</td><td><div class="trend-bar"><div class="trend-bar-fill" style="width:54%;background:var(--green)"></div></div></td><td style="color:var(--green)">+120%</td></tr>
+          <tr><td style="color:var(--text)">Vertical Short-form</td><td><div class="trend-bar"><div class="trend-bar-fill" style="width:48%;background:var(--yellow)"></div></div></td><td style="color:var(--green)">+98%</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title mb-8">📊 Активность конкурентов</div>
+        <table>
+          <tr><td style="color:var(--text)">VideoSmile</td><td><span class="tag green">12 новых</span></td><td style="font-size:12px">Behance, YouTube</td></tr>
+          <tr><td style="color:var(--text)">Smetana</td><td><span class="tag blue">8 новых</span></td><td style="font-size:12px">Instagram, Vimeo</td></tr>
+          <tr><td style="color:var(--text)">KINESKO</td><td><span class="tag yellow">5 новых</span></td><td style="font-size:12px">Behance</td></tr>
+          <tr><td style="color:var(--text)">Zebra Hero</td><td><span class="tag purple">3 новых</span></td><td style="font-size:12px">Dribbble, Vimeo</td></tr>
+          <tr><td style="color:var(--text)">Mondaymood</td><td><span class="tag">2 новых</span></td><td style="font-size:12px">YouTube</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title mb-8">⚡ Последние AI-рекомендации</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(137,64,250,.05);border-radius:8px;border:1px solid rgba(137,64,250,.15)">
+          <span>✨</span>
+          <div style="flex:1;font-size:13px">Тренд <strong>«Cinematic AI B-roll»</strong> показал рост +340% за 48ч. Рекомендую сгенерировать промты для Sora и Runway на эту тему.</div>
+          <button class="topbar-btn primary" style="font-size:11px;padding:4px 10px" onclick="navigate('prompts',document.querySelector('[data-page=prompts]'))">Генерировать →</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(34,197,94,.05);border-radius:8px;border:1px solid rgba(34,197,94,.15)">
+          <span>🎯</span>
+          <div style="flex:1;font-size:13px">Конкурент <strong>VideoSmile</strong> опубликовал 4 работы с 3D-анимацией продуктов. Проанализировать стиль?</div>
+          <button class="topbar-btn" style="font-size:11px;padding:4px 10px" onclick="navigate('competitors',document.querySelector('[data-page=competitors]'))">Анализ →</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(59,130,246,.05);border-radius:8px;border:1px solid rgba(59,130,246,.15)">
+          <span>📋</span>
+          <div style="flex:1;font-size:13px">Проект <strong>«Promo BrandX»</strong> ожидает согласования. Дедлайн через 2 дня.</div>
+          <button class="topbar-btn" style="font-size:11px;padding:4px 10px" onclick="navigate('crm',document.querySelector('[data-page=crm]'))">CRM →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TRENDS ===== -->
+  <div class="page" id="page-trends">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">AI Тренд-Аналитик</div>
+        <div class="section-sub">Автоматический парсинг Behance, Dribbble, YouTube, Instagram, TikTok, Pinterest</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="topbar-btn">За день</button>
+        <button class="topbar-btn primary">За неделю</button>
+        <button class="topbar-btn">За месяц</button>
+      </div>
+    </div>
+
+    <div class="grid grid-4 mb-24">
+      <div class="card">
+        <div class="card-title">🌐 Источников</div>
+        <div class="card-value">6</div>
+        <div class="card-sub">платформ мониторинга</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📄 Постов обработано</div>
+        <div class="card-value">12.4K</div>
+        <div class="card-sub">за последние 7 дней</div>
+      </div>
+      <div class="card">
+        <div class="card-title">🔥 Трендов обнаружено</div>
+        <div class="card-value" style="color:var(--accent)">127</div>
+        <div class="card-sub" style="color:var(--green)">+23 новых</div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚡ Аномалий</div>
+        <div class="card-value" style="color:var(--yellow)">3</div>
+        <div class="card-sub">резкий рост</div>
+      </div>
+    </div>
+
+    <div class="card mb-24">
+      <div class="card-title mb-8">📈 Тренды по категориям видеоконтента</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Тренд</th><th>Категория</th><th>Источники</th><th>Рост</th><th>Популярность</th><th>AI рекомендация</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--text);font-weight:500">Cinematic AI B-roll</td>
+              <td><span class="tag purple">AI видео</span></td>
+              <td>YouTube, TikTok, Behance</td>
+              <td style="color:var(--green);font-weight:600">+340%</td>
+              <td><div class="trend-bar" style="width:120px"><div class="trend-bar-fill" style="width:92%;background:var(--accent)"></div></div></td>
+              <td><span class="tag green">Создать контент</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-weight:500">3D Product Animation</td>
+              <td><span class="tag blue">3D</span></td>
+              <td>Behance, Dribbble, Instagram</td>
+              <td style="color:var(--green);font-weight:600">+210%</td>
+              <td><div class="trend-bar" style="width:120px"><div class="trend-bar-fill" style="width:78%;background:var(--accent2)"></div></div></td>
+              <td><span class="tag green">Создать контент</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-weight:500">AI Fashion Lookbook</td>
+              <td><span class="tag purple">AI видео</span></td>
+              <td>Instagram, TikTok, Pinterest</td>
+              <td style="color:var(--green);font-weight:600">+185%</td>
+              <td><div class="trend-bar" style="width:120px"><div class="trend-bar-fill" style="width:65%;background:var(--blue)"></div></div></td>
+              <td><span class="tag yellow">Наблюдать</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-weight:500">Morphing Transitions</td>
+              <td><span class="tag blue">Motion</span></td>
+              <td>Dribbble, Behance</td>
+              <td style="color:var(--green);font-weight:600">+120%</td>
+              <td><div class="trend-bar" style="width:120px"><div class="trend-bar-fill" style="width:54%;background:var(--green)"></div></div></td>
+              <td><span class="tag yellow">Наблюдать</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-weight:500">Vertical Short-form</td>
+              <td><span class="tag">Формат</span></td>
+              <td>TikTok, YouTube Shorts</td>
+              <td style="color:var(--green);font-weight:600">+98%</td>
+              <td><div class="trend-bar" style="width:120px"><div class="trend-bar-fill" style="width:48%;background:var(--yellow)"></div></div></td>
+              <td><span class="tag">Стабильный</span></td>
+            </tr>
+            <tr>
+              <td style="color:var(--text);font-weight:500">Retro VHS Aesthetic</td>
+              <td><span class="tag">Стиль</span></td>
+              <td>TikTok, Instagram</td>
+              <td style="color:var(--green);font-weight:600">+87%</td>
+              <td><div class="trend-bar" style="width:120px"><div class="trend-bar-fill" style="width:42%;background:var(--yellow)"></div></div></td>
+              <td><span class="tag">Стабильный</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card">
+        <div class="card-title">🎬 YouTube</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Топ стилей за неделю:</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">Cinematic Drone + AI</span><span style="color:var(--green)">+45%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">Tutorial Explainers</span><span style="color:var(--green)">+32%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">AI Music Videos</span><span style="color:var(--green)">+28%</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📸 Instagram / TikTok</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Вирусные форматы:</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">AI Transformation Reels</span><span style="color:var(--green)">+120%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">Product Unboxing 3D</span><span style="color:var(--green)">+89%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">Split-screen Comparisons</span><span style="color:var(--green)">+67%</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎨 Behance / Dribbble</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Дизайн-тренды:</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">Glassmorphism Video</span><span style="color:var(--green)">+78%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">Abstract 3D Loops</span><span style="color:var(--green)">+56%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--text)">Kinetic Typography</span><span style="color:var(--green)">+43%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== COMPETITORS ===== -->
+  <div class="page" id="page-competitors">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Мониторинг конкурентов</div>
+        <div class="section-sub">AI-анализ работ и стратегий конкурентов в реальном времени</div>
+      </div>
+      <button class="topbar-btn primary">+ Добавить конкурента</button>
+    </div>
+
+    <div class="grid grid-4 mb-24">
+      <div class="card">
+        <div class="card-title">🎯 Мониторинг</div>
+        <div class="card-value">15</div>
+        <div class="card-sub">студий отслеживается</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📄 Новых работ</div>
+        <div class="card-value" style="color:var(--accent)">34</div>
+        <div class="card-sub">за последние 7 дней</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 AI-отчётов</div>
+        <div class="card-value">8</div>
+        <div class="card-sub">готовых к просмотру</div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚠️ Алертов</div>
+        <div class="card-value" style="color:var(--yellow)">2</div>
+        <div class="card-sub">требуют внимания</div>
+      </div>
+    </div>
+
+    <div class="grid grid-2 mb-24">
+      <div class="competitor-card">
+        <div class="competitor-avatar" style="background:linear-gradient(135deg,#ff6b6b,#ee5a24)">V</div>
+        <div class="competitor-info">
+          <div class="competitor-name">VideoSmile</div>
+          <div class="competitor-handle">Behance, YouTube, Instagram</div>
+          <div class="competitor-stats">
+            <span>📄 12 новых работ</span>
+            <span>👁 45K просмотров</span>
+            <span style="color:var(--green)">↑ Активный</span>
+          </span>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text2);padding:8px;background:rgba(137,64,250,.05);border-radius:6px;border:1px solid rgba(137,64,250,.1)">
+            <strong style="color:var(--accent)">AI-инсайт:</strong> Фокус на 3D product animation. Используют Blender + After Effects. Средний engagement rate: 4.2%
+          </div>
+        </div>
+      </div>
+      <div class="competitor-card">
+        <div class="competitor-avatar" style="background:linear-gradient(135deg,#3b82f6,#2563eb)">S</div>
+        <div class="competitor-info">
+          <div class="competitor-name">Smetana Creative</div>
+          <div class="competitor-handle">Instagram, Vimeo, Behance</div>
+          <div class="competitor-stats">
+            <span>📄 8 новых работ</span>
+            <span>👁 28K просмотров</span>
+            <span style="color:var(--green)">↑ Активный</span>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text2);padding:8px;background:rgba(137,64,250,.05);border-radius:6px;border:1px solid rgba(137,64,250,.1)">
+            <strong style="color:var(--accent)">AI-инсайт:</strong> Тренд на минимализм и чистую типографику. Активно экспериментируют с AI video (Sora).
+          </div>
+        </div>
+      </div>
+      <div class="competitor-card">
+        <div class="competitor-avatar" style="background:linear-gradient(135deg,#eab308,#ca8a04)">K</div>
+        <div class="competitor-info">
+          <div class="competitor-name">KINESKO</div>
+          <div class="competitor-handle">Behance, Dribbble</div>
+          <div class="competitor-stats">
+            <span>📄 5 новых работ</span>
+            <span>👁 18K просмотров</span>
+            <span style="color:var(--text3)">— Средний</span>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text2);padding:8px;background:rgba(137,64,250,.05);border-radius:6px;border:1px solid rgba(137,64,250,.1)">
+            <strong style="color:var(--accent)">AI-инсайт:</strong> Специализация на motion design для IT-стартапов. Стабильный визуальный стиль.
+          </div>
+        </div>
+      </div>
+      <div class="competitor-card">
+        <div class="competitor-avatar" style="background:linear-gradient(135deg,#8940FA,#c084fc)">Z</div>
+        <div class="competitor-info">
+          <div class="competitor-name">Zebra Hero</div>
+          <div class="competitor-handle">Dribbble, Vimeo</div>
+          <div class="competitor-stats">
+            <span>📄 3 новых работ</span>
+            <span>👁 12K просмотров</span>
+            <span style="color:var(--text3)">— Средний</span>
+          </div>
+          <div style="margin-top:10px;font-size:12px;color:var(--text2);padding:8px;background:rgba(137,64,250,.05);border-radius:6px;border:1px solid rgba(137,64,250,.1)">
+            <strong style="color:var(--accent)">AI-инсайт:</strong> Сильные explainer videos. Начали использовать AI для генерации стилей.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title mb-8">📊 Сравнительный анализ (AI-сводка)</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Студия</th><th>Стиль</th><th>AI-инструменты</th><th>Платформы</th><th>Engagement</th><th>Угроза</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="color:var(--text);font-weight:500">VideoSmile</td><td>3D / Product</td><td>Midjourney, Runway</td><td>YouTube, Behance</td><td style="color:var(--green)">4.2%</td><td><span class="tag red">Высокая</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Smetana</td><td>Минимализм</td><td>Sora, DALL-E</td><td>Instagram, Vimeo</td><td style="color:var(--green)">3.8%</td><td><span class="tag yellow">Средняя</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">KINESKO</td><td>Motion / IT</td><td>After Effects</td><td>Behance, Dribbble</td><td>2.9%</td><td><span class="tag">Низкая</span></td></tr>
+            <tr><td style="color:var(--text);font-weight:500">Zebra Hero</td><td>Explainer</td><td>Midjourney</td><td>Dribbble, Vimeo</td><td>3.1%</td><td><span class="tag">Низкая</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PROMPT GENERATOR ===== -->
+  <div class="page" id="page-prompts">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">AI Промт-генератор</div>
+        <div class="section-sub">Генерация промтов для видеоконтента на основе трендов и анализа конкурентов</div>
+      </div>
+    </div>
+
+    <div class="card mb-24">
+      <div class="card-title mb-8">⚙ Параметры генерации</div>
+      <div class="grid grid-3" style="gap:12px">
+        <div>
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;letter-spacing:.5px">Целевая платформа</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="filter-btn active">Sora</span>
+            <span class="filter-btn">Runway</span>
+            <span class="filter-btn">Midjourney</span>
+            <span class="filter-btn">DALL-E</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;letter-spacing:.5px">Тренд-основа</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="filter-btn active">Cinematic AI B-roll</span>
+            <span class="filter-btn">3D Product</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--text3);text-transform:uppercase;margin-bottom:6px;letter-spacing:.5px">Стиль</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span class="filter-btn active">Cinematic</span>
+            <span class="filter-btn">Minimal</span>
+            <span class="filter-btn">Bold</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:8px">
+        <button class="topbar-btn primary" onclick="generatePrompts()">✨ Сгенерировать промты</button>
+        <button class="topbar-btn">📋 Из брифа клиента</button>
+      </div>
+    </div>
+
+    <div class="section-header mb-16">
+      <div class="section-title">Сгенерированные промты</div>
+      <div class="section-sub" id="prompt-count">6 промтов</div>
+    </div>
+
+    <div class="grid grid-2" id="prompts-grid">
+      <div class="prompt-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="tag purple">Sora</span>
+          <span style="font-size:11px;color:var(--text3)">Cinematic AI B-roll</span>
+        </div>
+        <div class="prompt-text">A sweeping cinematic aerial shot of a futuristic city at golden hour, camera slowly dollying forward through glass skyscrapers reflecting sunset light, volumetric fog between buildings, ultra-realistic 8K, anamorphic lens flare, film grain</div>
+        <div class="prompt-meta">
+          <span class="tag">16:9</span>
+          <span class="tag">10s</span>
+          <span class="tag green">Trending +340%</span>
+        </div>
+      </div>
+      <div class="prompt-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="tag purple">Sora</span>
+          <span style="font-size:11px;color:var(--text3)">Cinematic AI B-roll</span>
+        </div>
+        <div class="prompt-text">Macro shot of coffee being poured into a ceramic cup, slow motion 120fps, steam rising with backlight creating god rays, shallow depth of field, warm color palette, commercial quality, Arri Alexa look</div>
+        <div class="prompt-meta">
+          <span class="tag">16:9</span>
+          <span class="tag">5s</span>
+          <span class="tag green">Commercial</span>
+        </div>
+      </div>
+      <div class="prompt-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="tag blue">Runway</span>
+          <span style="font-size:11px;color:var(--text3)">3D Product</span>
+        </div>
+        <div class="prompt-text">Sleek wireless headphones floating and rotating in zero gravity, dark studio background with single rim light, product slowly disassembles to reveal internal components, smooth camera orbit, commercial CGI quality</div>
+        <div class="prompt-meta">
+          <span class="tag">16:9</span>
+          <span class="tag">8s</span>
+          <span class="tag blue">Product</span>
+        </div>
+      </div>
+      <div class="prompt-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="tag yellow">Midjourney</span>
+          <span style="font-size:11px;color:var(--text3)">Fashion</span>
+        </div>
+        <div class="prompt-text">Fashion model walking through a neon-lit Tokyo street at night, rain reflections on pavement, cyberpunk aesthetic, Vogue editorial style, dramatic rim lighting, Kodak Portra 400 film look --ar 9:16 --v 6</div>
+        <div class="prompt-meta">
+          <span class="tag">9:16</span>
+          <span class="tag">Still</span>
+          <span class="tag green">Trending +185%</span>
+        </div>
+      </div>
+      <div class="prompt-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="tag purple">Sora</span>
+          <span style="font-size:11px;color:var(--text3)">Morphing</span>
+        </div>
+        <div class="prompt-text">Seamless morphing transition: a glass of water transforms into a crystal sphere, then into a soap bubble that floats upward and pops into a thousand tiny stars, continuous single take, white cyclorama background</div>
+        <div class="prompt-meta">
+          <span class="tag">1:1</span>
+          <span class="tag">6s</span>
+          <span class="tag yellow">Experimental</span>
+        </div>
+      </div>
+      <div class="prompt-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span class="tag blue">Runway</span>
+          <span style="font-size:11px;color:var(--text3)">Typography</span>
+        </div>
+        <div class="prompt-text">Bold 3D text "STUDIO MIP" emerges from liquid metal surface, each letter dripping chrome, camera slowly pulls back to reveal reflection, dark moody studio environment, dramatic volumetric lighting</div>
+        <div class="prompt-meta">
+          <span class="tag">16:9</span>
+          <span class="tag">5s</span>
+          <span class="tag purple">Branding</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LIBRARY ===== -->
+  <div class="page" id="page-library">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Библиотека промтов и референсов</div>
+        <div class="section-sub">48 сохранённых промтов, 124 референса</div>
+      </div>
+      <button class="topbar-btn primary">+ Добавить</button>
+    </div>
+
+    <div class="library-filters mb-16">
+      <span class="filter-btn active">Все</span>
+      <span class="filter-btn">Sora</span>
+      <span class="filter-btn">Runway</span>
+      <span class="filter-btn">Midjourney</span>
+      <span class="filter-btn">DALL-E</span>
+      <span class="filter-btn">After Effects</span>
+      <span class="filter-btn">Cinematic</span>
+      <span class="filter-btn">Product</span>
+      <span class="filter-btn">Motion</span>
+      <span class="filter-btn">Typography</span>
+    </div>
+
+    <div class="grid grid-3 mb-24">
+      <div class="card" style="cursor:pointer">
+        <div style="height:120px;border-radius:8px;background:linear-gradient(135deg,#1a0533,#2d1b69);margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px">🎬</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Cinematic B-roll Collection</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">12 промтов для кинематографических вставок</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span class="tag purple">Sora</span>
+          <span class="tag blue">Runway</span>
+          <span class="tag">16:9</span>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer">
+        <div style="height:120px;border-radius:8px;background:linear-gradient(135deg,#0a1628,#1e3a5f);margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Product Showcase</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">8 промтов для презентации продуктов</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span class="tag blue">Runway</span>
+          <span class="tag yellow">Midjourney</span>
+          <span class="tag">3D</span>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer">
+        <div style="height:120px;border-radius:8px;background:linear-gradient(135deg,#1a0a00,#4a2000);margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px">🔤</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Kinetic Typography</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">6 промтов для анимации текста</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span class="tag purple">Sora</span>
+          <span class="tag">Motion</span>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer">
+        <div style="height:120px;border-radius:8px;background:linear-gradient(135deg,#0a1a0a,#1a4a1a);margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px">🌿</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Nature & Landscapes</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">10 промтов для пейзажей</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span class="tag purple">Sora</span>
+          <span class="tag">Cinematic</span>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer">
+        <div style="height:120px;border-radius:8px;background:linear-gradient(135deg,#1a0a1a,#4a0a4a);margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px">👗</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:4px">Fashion & Beauty</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">7 промтов для фэшн-контента</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span class="tag yellow">Midjourney</span>
+          <span class="tag">Editorial</span>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer">
+        <div style="height:120px;border-radius:8px;background:linear-gradient(135deg,#1a1a1a,#333);margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:40px">✨</div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:4px">VFX & Transitions</div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px">5 промтов для спецэффектов</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <span class="tag blue">Runway</span>
+          <span class="tag purple">Sora</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== AI ASSISTANT ===== -->
+  <div class="page" id="page-assistant">
+    <div class="chat-container">
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg ai">
+          <div class="chat-msg-avatar">AI</div>
+          <div class="chat-msg-bubble">
+            Привет! Я AI-ассистент StudioMIP. Я знаю контекст вашей студии, текущие тренды и историю проектов. Чем могу помочь?<br><br>
+            Примеры запросов:<br>
+            • Сгенерируй промт для рекламного ролика кофейни<br>
+            • Какие тренды сейчас в 3D-анимации?<br>
+            • Подготовь бриф для нового проекта<br>
+            • Что нового у конкурентов на Behance?
+          </div>
+        </div>
+        <div class="chat-msg user">
+          <div class="chat-msg-avatar">МП</div>
+          <div class="chat-msg-bubble">Нужен промт для Sora — реклама нового смартфона в стиле Apple</div>
+        </div>
+        <div class="chat-msg ai">
+          <div class="chat-msg-avatar">AI</div>
+          <div class="chat-msg-bubble">
+            Отличная задача! Вот промт с учётом текущего тренда на «Cinematic AI B-roll» (+340%):<br><br>
+            <div style="background:rgba(137,64,250,.08);padding:10px;border-radius:6px;border:1px solid rgba(137,64,250,.15);font-family:monospace;font-size:12px;margin:8px 0">
+            A sleek smartphone slowly rotating on invisible axis against pure black background, single soft key light creating elegant highlights on glass surface, camera smoothly orbits revealing each angle, minimal Apple-style presentation, shallow depth of field with soft bokeh, 8K ultra-clean render, no text
+            </div>
+            <strong>Рекомендации:</strong><br>
+            • Длительность: 6-8 секунд<br>
+            • Формат: 16:9 для YouTube, дополнительно 9:16 для Reels<br>
+            • Конкурент VideoSmile недавно делал похожий проект — я могу показать их подход для референса<br><br>
+            Сохранить в библиотеку?
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input class="chat-input" id="chat-input" type="text" placeholder="Спросите AI-ассистента..." onkeypress="if(event.key==='Enter')sendChat()">
+        <button class="chat-send" onclick="sendChat()">→</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CRM ===== -->
+  <div class="page" id="page-crm">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">CRM проектов</div>
+        <div class="section-sub">Управление проектами: бриф → концепт → согласование → продакшн → пост-продакшн → сдача</div>
+      </div>
+      <button class="topbar-btn primary">+ Новый проект</button>
+    </div>
+
+    <div class="pipeline">
+      <div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title">📝 Бриф</span>
+          <span class="pipeline-col-count">2</span>
+        </div>
+        <div class="pipeline-card">
+          <div class="pipeline-card-title">Рекламный ролик FinTech</div>
+          <div class="pipeline-card-client">Клиент: NeoBank</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 450K</span>
+            <span class="pipeline-card-date">3 дня назад</span>
+          </div>
+        </div>
+        <div class="pipeline-card">
+          <div class="pipeline-card-title">Имиджевое видео</div>
+          <div class="pipeline-card-client">Клиент: ArtStudio</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 280K</span>
+            <span class="pipeline-card-date">1 день назад</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title">💡 Концепт</span>
+          <span class="pipeline-col-count">1</span>
+        </div>
+        <div class="pipeline-card">
+          <div class="pipeline-card-title">Product Video Headphones</div>
+          <div class="pipeline-card-client">Клиент: SoundMax</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 350K</span>
+            <span class="pipeline-card-date">5 дней назад</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title" style="color:var(--yellow)">⏳ Согласование</span>
+          <span class="pipeline-col-count">2</span>
+        </div>
+        <div class="pipeline-card" style="border-color:rgba(234,179,8,.3)">
+          <div class="pipeline-card-title">Promo BrandX</div>
+          <div class="pipeline-card-client">Клиент: BrandX Corp</div>
+          <div style="font-size:11px;color:var(--yellow);margin-bottom:6px">⚠ Дедлайн через 2 дня</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 520K</span>
+            <span class="pipeline-card-date">8 дней назад</span>
+          </div>
+        </div>
+        <div class="pipeline-card">
+          <div class="pipeline-card-title">Серия Reels</div>
+          <div class="pipeline-card-client">Клиент: FashionLine</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 180K</span>
+            <span class="pipeline-card-date">4 дня назад</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title" style="color:var(--accent)">🎬 Продакшн</span>
+          <span class="pipeline-col-count">2</span>
+        </div>
+        <div class="pipeline-card" style="border-color:rgba(137,64,250,.3)">
+          <div class="pipeline-card-title">AI-ролик для стартапа</div>
+          <div class="pipeline-card-client">Клиент: TechVision</div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:6px">🎬 В работе: рендер сцен</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 680K</span>
+            <span class="pipeline-card-date">12 дней назад</span>
+          </div>
+        </div>
+        <div class="pipeline-card" style="border-color:rgba(137,64,250,.3)">
+          <div class="pipeline-card-title">Explainer Video SaaS</div>
+          <div class="pipeline-card-client">Клиент: CloudApp</div>
+          <div style="font-size:11px;color:var(--accent);margin-bottom:6px">🎬 В работе: анимация</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 390K</span>
+            <span class="pipeline-card-date">10 дней назад</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title">🎛 Пост-продакшн</span>
+          <span class="pipeline-col-count">1</span>
+        </div>
+        <div class="pipeline-card">
+          <div class="pipeline-card-title">Корпоративный фильм</div>
+          <div class="pipeline-card-client">Клиент: MetalGroup</div>
+          <div style="font-size:11px;color:var(--green);margin-bottom:6px">✓ Цветокоррекция</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 750K</span>
+            <span class="pipeline-card-date">18 дней назад</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-col">
+        <div class="pipeline-col-header">
+          <span class="pipeline-col-title" style="color:var(--green)">✅ Сдача</span>
+          <span class="pipeline-col-count">3</span>
+        </div>
+        <div class="pipeline-card" style="border-color:rgba(34,197,94,.3)">
+          <div class="pipeline-card-title">Music Video AI</div>
+          <div class="pipeline-card-client">Клиент: DJ Pulse</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 420K</span>
+            <span class="pipeline-card-date">вчера</span>
+          </div>
+        </div>
+        <div class="pipeline-card" style="border-color:rgba(34,197,94,.3)">
+          <div class="pipeline-card-title">Лого-анимация</div>
+          <div class="pipeline-card-client">Клиент: StartupXYZ</div>
+          <div class="pipeline-card-footer">
+            <span class="pipeline-card-price">₽ 85K</span>
+            <span class="pipeline-card-date">2 дня назад</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== INTEGRATIONS ===== -->
+  <div class="page" id="page-integrations">
+    <div class="section-header mb-16">
+      <div>
+        <div class="section-title">Интеграции</div>
+        <div class="section-sub">Подключённые сервисы и платформы</div>
+      </div>
+    </div>
+
+    <div class="section-header mb-16" style="margin-top:8px">
+      <div class="section-sub" style="font-size:13px;font-weight:500;color:var(--text)">AI-генерация</div>
+    </div>
+    <div class="grid grid-3 mb-24">
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">🎬</div>
+        <div class="integration-info">
+          <div class="integration-name">Sora (OpenAI)</div>
+          <div class="integration-desc">AI-видеогенерация</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#0f172a,#1e293b)">🎥</div>
+        <div class="integration-info">
+          <div class="integration-name">Runway ML</div>
+          <div class="integration-desc">Gen-3 Alpha видео</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#1a0a2e,#2d1b4e)">🎨</div>
+        <div class="integration-info">
+          <div class="integration-name">Midjourney</div>
+          <div class="integration-desc">AI-генерация изображений</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#1a1a1a,#333)">🖼</div>
+        <div class="integration-info">
+          <div class="integration-name">DALL-E 3</div>
+          <div class="integration-desc">AI-генерация изображений</div>
+        </div>
+        <span class="integration-status" style="background:rgba(234,179,8,.1);color:var(--yellow);border:1px solid rgba(234,179,8,.3)">Настройка</span>
+      </div>
+    </div>
+
+    <div class="section-header mb-16">
+      <div class="section-sub" style="font-size:13px;font-weight:500;color:var(--text)">Парсинг трендов</div>
+    </div>
+    <div class="grid grid-3 mb-24">
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#0052ff22,#0052ff11)">🅱</div>
+        <div class="integration-info">
+          <div class="integration-name">Behance</div>
+          <div class="integration-desc">Мониторинг дизайн-трендов</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#ea458522,#ea458511)">🏀</div>
+        <div class="integration-info">
+          <div class="integration-name">Dribbble</div>
+          <div class="integration-desc">Мониторинг работ дизайнеров</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#ff000022,#ff000011)">▶</div>
+        <div class="integration-info">
+          <div class="integration-name">YouTube</div>
+          <div class="integration-desc">Анализ видеотрендов</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#e1306c22,#e1306c11)">📷</div>
+        <div class="integration-info">
+          <div class="integration-name">Instagram</div>
+          <div class="integration-desc">Мониторинг Reels</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#00000022,#00000011)">🎵</div>
+        <div class="integration-info">
+          <div class="integration-name">TikTok</div>
+          <div class="integration-desc">Анализ вирусных видео</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#e6001922,#e6001911)">📌</div>
+        <div class="integration-info">
+          <div class="integration-name">Pinterest</div>
+          <div class="integration-desc">Визуальные тренды</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+    </div>
+
+    <div class="section-header mb-16">
+      <div class="section-sub" style="font-size:13px;font-weight:500;color:var(--text)">Видеохостинг</div>
+    </div>
+    <div class="grid grid-3 mb-24">
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#1ab7ea22,#1ab7ea11)">🎞</div>
+        <div class="integration-info">
+          <div class="integration-name">Vimeo</div>
+          <div class="integration-desc">Хостинг и аналитика</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+    </div>
+
+    <div class="section-header mb-16">
+      <div class="section-sub" style="font-size:13px;font-weight:500;color:var(--text)">Коммуникации</div>
+    </div>
+    <div class="grid grid-3 mb-24">
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#0088cc22,#0088cc11)">✈</div>
+        <div class="integration-info">
+          <div class="integration-name">Telegram</div>
+          <div class="integration-desc">Уведомления и алерты</div>
+        </div>
+        <span class="integration-status" style="background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3)">Активна</span>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon" style="background:linear-gradient(135deg,#4285f422,#4285f411)">📅</div>
+        <div class="integration-info">
+          <div class="integration-name">Google Calendar</div>
+          <div class="integration-desc">Дедлайны проектов</div>
+        </div>
+        <span class="integration-status" style="background:rgba(234,179,8,.1);color:var(--yellow);border:1px solid rgba(234,179,8,.3)">Настройка</span>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+const pageTitles = {
+  dashboard: 'Дашборд студии',
+  trends: 'AI Тренд-Аналитик',
+  competitors: 'Мониторинг конкурентов',
+  prompts: 'AI Промт-генератор',
+  library: 'Библиотека промтов',
+  assistant: 'AI-ассистент',
+  crm: 'CRM проектов',
+  integrations: 'Интеграции'
+};
+
+function navigate(page, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent = pageTitles[page] || page;
+  // Close sidebar on mobile
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+
+function generatePrompts() {
+  const btn = event.target;
+  btn.textContent = '⏳ Генерация...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✅ Готово!';
+    setTimeout(() => {
+      btn.textContent = '✨ Сгенерировать промты';
+      btn.disabled = false;
+    }, 1500);
+  }, 2000);
+}
+
+const aiResponses = [
+  'Отличный вопрос! На основе текущих трендов, я рекомендую использовать стиль «Cinematic AI B-roll» — он показывает рост +340% на этой неделе. Хотите, сгенерирую промт под вашу задачу?',
+  'Проанализировал данные конкурентов. VideoSmile активно инвестирует в 3D product animation, а Smetana Creative переходит на AI-генерацию через Sora. Рекомендую обратить внимание на нишу «AI Fashion Lookbook» — конкуренция там пока низкая.',
+  'Готово! Я подготовил 3 варианта промтов для вашего проекта. Каждый оптимизирован под разную платформу: Sora (cinematic), Runway (product), Midjourney (stills). Сохранить все в библиотеку?',
+  'По данным из Behance и Dribbble, формат «morphing transitions» набирает популярность. Это может быть интересно для текущего проекта с BrandX. Хотите, создам mood board?'
+];
+
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const messages = document.getElementById('chat-messages');
+
+  // User message
+  messages.innerHTML += `
+    <div class="chat-msg user">
+      <div class="chat-msg-avatar">МП</div>
+      <div class="chat-msg-bubble">${msg}</div>
+    </div>`;
+  input.value = '';
+  messages.scrollTop = messages.scrollHeight;
+
+  // AI response
+  setTimeout(() => {
+    const resp = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+    messages.innerHTML += `
+      <div class="chat-msg ai">
+        <div class="chat-msg-avatar">AI</div>
+        <div class="chat-msg-bubble">${resp}</div>
+      </div>`;
+    messages.scrollTop = messages.scrollHeight;
+  }, 1000 + Math.random() * 1500);
+}
+
+// Make filter buttons toggleable
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    if (this.parentElement.classList.contains('library-filters')) {
+      this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    }
+    this.classList.toggle('active');
+  });
+});
+</script>
+</body>
+</html>
